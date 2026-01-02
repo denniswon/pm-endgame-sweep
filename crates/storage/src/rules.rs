@@ -1,6 +1,8 @@
 //! Database operations for rules
 
+use bigdecimal::BigDecimal;
 use sqlx::PgPool;
+use std::str::FromStr;
 
 use pm_domain::RuleSnapshot;
 
@@ -16,6 +18,11 @@ pub enum RuleError {
 }
 
 pub type Result<T> = std::result::Result<T, RuleError>;
+
+/// Convert f64 to BigDecimal
+fn f64_to_bigdecimal(val: f64) -> BigDecimal {
+    BigDecimal::from_str(&val.to_string()).unwrap_or_else(|_| BigDecimal::from(0))
+}
 
 /// Upsert rule snapshot for a market
 pub async fn upsert_rule(pool: &PgPool, rule: &RuleSnapshot) -> Result<()> {
@@ -46,7 +53,7 @@ pub async fn upsert_rule(pool: &PgPool, rule: &RuleSnapshot) -> Result<()> {
         rule.rule_hash,
         rule.settlement_source,
         rule.settlement_window,
-        rule.definition_risk_score,
+        f64_to_bigdecimal(rule.definition_risk_score),
         risk_flags_json
     )
     .execute(pool)

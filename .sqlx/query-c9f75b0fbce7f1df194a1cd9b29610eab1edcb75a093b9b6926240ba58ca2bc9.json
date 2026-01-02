@@ -1,0 +1,23 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n        INSERT INTO markets (\n            market_id, venue, title, slug, category, status,\n            open_time, close_time, resolved_time, url\n        )\n        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)\n        ON CONFLICT (market_id)\n        DO UPDATE SET\n            title = EXCLUDED.title,\n            slug = EXCLUDED.slug,\n            category = EXCLUDED.category,\n            status = EXCLUDED.status,\n            open_time = EXCLUDED.open_time,\n            close_time = EXCLUDED.close_time,\n            resolved_time = EXCLUDED.resolved_time,\n            url = EXCLUDED.url,\n            updated_at = NOW()\n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Text",
+        "Text",
+        "Text",
+        "Text",
+        "Text",
+        "Text",
+        "Timestamptz",
+        "Timestamptz",
+        "Timestamptz",
+        "Text"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "c9f75b0fbce7f1df194a1cd9b29610eab1edcb75a093b9b6926240ba58ca2bc9"
+}

@@ -1,0 +1,22 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n        INSERT INTO recs_latest (\n            market_id, as_of, recommended_side, entry_price,\n            expected_payout, max_position_pct, risk_score,\n            risk_flags, notes\n        )\n        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)\n        ON CONFLICT (market_id)\n        DO UPDATE SET\n            as_of = EXCLUDED.as_of,\n            recommended_side = EXCLUDED.recommended_side,\n            entry_price = EXCLUDED.entry_price,\n            expected_payout = EXCLUDED.expected_payout,\n            max_position_pct = EXCLUDED.max_position_pct,\n            risk_score = EXCLUDED.risk_score,\n            risk_flags = EXCLUDED.risk_flags,\n            notes = EXCLUDED.notes,\n            updated_at = NOW()\n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Text",
+        "Timestamptz",
+        "Text",
+        "Numeric",
+        "Numeric",
+        "Numeric",
+        "Numeric",
+        "Jsonb",
+        "Text"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "1f2f54b210d1c1edcae56659f6fe0bf38787c5b53c413a7704212f820bac056d"
+}

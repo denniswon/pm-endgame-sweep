@@ -1,6 +1,6 @@
 //! Database operations for markets
 
-use chrono::{DateTime, Utc};
+use chrono::Utc;
 use sqlx::PgPool;
 
 use pm_domain::{Market, MarketStatus, Outcome};

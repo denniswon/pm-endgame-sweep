@@ -1,7 +1,9 @@
 //! Database operations for quotes
 
+use bigdecimal::BigDecimal;
 use chrono::{DateTime, Timelike, Utc};
 use sqlx::PgPool;
+use std::str::FromStr;
 
 use pm_domain::Quote;
 
@@ -15,6 +17,26 @@ pub enum QuoteError {
 }
 
 pub type Result<T> = std::result::Result<T, QuoteError>;
+
+/// Convert f64 to BigDecimal
+fn f64_to_bigdecimal(val: f64) -> BigDecimal {
+    BigDecimal::from_str(&val.to_string()).unwrap_or_else(|_| BigDecimal::from(0))
+}
+
+/// Convert Option<f64> to Option<BigDecimal>
+fn opt_f64_to_bigdecimal(val: Option<f64>) -> Option<BigDecimal> {
+    val.map(f64_to_bigdecimal)
+}
+
+/// Convert BigDecimal to f64
+fn bigdecimal_to_f64(val: BigDecimal) -> f64 {
+    val.to_string().parse().unwrap_or(0.0)
+}
+
+/// Convert Option<BigDecimal> to Option<f64>
+fn opt_bigdecimal_to_f64(val: Option<BigDecimal>) -> Option<f64> {
+    val.map(bigdecimal_to_f64)
+}
 
 /// Upsert latest quote for a market
 pub async fn upsert_quote_latest(pool: &PgPool, quote: &Quote) -> Result<()> {
@@ -41,14 +63,14 @@ pub async fn upsert_quote_latest(pool: &PgPool, quote: &Quote) -> Result<()> {
         "#,
         quote.market_id,
         quote.as_of,
-        quote.yes_bid,
-        quote.yes_ask,
-        quote.no_bid,
-        quote.no_ask,
-        quote.spread_yes,
-        quote.spread_no,
-        quote.mid_yes,
-        quote.mid_no,
+        opt_f64_to_bigdecimal(quote.yes_bid),
+        opt_f64_to_bigdecimal(quote.yes_ask),
+        opt_f64_to_bigdecimal(quote.no_bid),
+        opt_f64_to_bigdecimal(quote.no_ask),
+        opt_f64_to_bigdecimal(quote.spread_yes),
+        opt_f64_to_bigdecimal(quote.spread_no),
+        opt_f64_to_bigdecimal(quote.mid_yes),
+        opt_f64_to_bigdecimal(quote.mid_no),
         quote.quote_source
     )
     .execute(pool)
@@ -89,14 +111,14 @@ pub async fn upsert_quotes_latest_batch(pool: &PgPool, quotes: &[Quote]) -> Resu
             "#,
             quote.market_id,
             quote.as_of,
-            quote.yes_bid,
-            quote.yes_ask,
-            quote.no_bid,
-            quote.no_ask,
-            quote.spread_yes,
-            quote.spread_no,
-            quote.mid_yes,
-            quote.mid_no,
+            opt_f64_to_bigdecimal(quote.yes_bid),
+            opt_f64_to_bigdecimal(quote.yes_ask),
+            opt_f64_to_bigdecimal(quote.no_bid),
+            opt_f64_to_bigdecimal(quote.no_ask),
+            opt_f64_to_bigdecimal(quote.spread_yes),
+            opt_f64_to_bigdecimal(quote.spread_no),
+            opt_f64_to_bigdecimal(quote.mid_yes),
+            opt_f64_to_bigdecimal(quote.mid_no),
             quote.quote_source
         )
         .execute(&mut *tx)
@@ -127,14 +149,14 @@ pub async fn get_quote_latest(pool: &PgPool, market_id: &str) -> Result<Quote> {
     Ok(Quote {
         market_id: row.market_id,
         as_of: row.as_of,
-        yes_bid: row.yes_bid,
-        yes_ask: row.yes_ask,
-        no_bid: row.no_bid,
-        no_ask: row.no_ask,
-        spread_yes: row.spread_yes,
-        spread_no: row.spread_no,
-        mid_yes: row.mid_yes,
-        mid_no: row.mid_no,
+        yes_bid: opt_bigdecimal_to_f64(row.yes_bid),
+        yes_ask: opt_bigdecimal_to_f64(row.yes_ask),
+        no_bid: opt_bigdecimal_to_f64(row.no_bid),
+        no_ask: opt_bigdecimal_to_f64(row.no_ask),
+        spread_yes: opt_bigdecimal_to_f64(row.spread_yes),
+        spread_no: opt_bigdecimal_to_f64(row.spread_no),
+        mid_yes: opt_bigdecimal_to_f64(row.mid_yes),
+        mid_no: opt_bigdecimal_to_f64(row.mid_no),
         quote_source: row.quote_source,
     })
 }
@@ -166,14 +188,14 @@ pub async fn get_quotes_latest_batch(
         .map(|row| Quote {
             market_id: row.market_id,
             as_of: row.as_of,
-            yes_bid: row.yes_bid,
-            yes_ask: row.yes_ask,
-            no_bid: row.no_bid,
-            no_ask: row.no_ask,
-            spread_yes: row.spread_yes,
-            spread_no: row.spread_no,
-            mid_yes: row.mid_yes,
-            mid_no: row.mid_no,
+            yes_bid: opt_bigdecimal_to_f64(row.yes_bid),
+            yes_ask: opt_bigdecimal_to_f64(row.yes_ask),
+            no_bid: opt_bigdecimal_to_f64(row.no_bid),
+            no_ask: opt_bigdecimal_to_f64(row.no_ask),
+            spread_yes: opt_bigdecimal_to_f64(row.spread_yes),
+            spread_no: opt_bigdecimal_to_f64(row.spread_no),
+            mid_yes: opt_bigdecimal_to_f64(row.mid_yes),
+            mid_no: opt_bigdecimal_to_f64(row.mid_no),
             quote_source: row.quote_source,
         })
         .collect())
@@ -195,10 +217,10 @@ pub async fn insert_quote_5m(pool: &PgPool, quote: &Quote) -> Result<()> {
         quote.market_id,
         bucket_start,
         quote.as_of,
-        quote.yes_bid,
-        quote.yes_ask,
-        quote.no_bid,
-        quote.no_ask
+        opt_f64_to_bigdecimal(quote.yes_bid),
+        opt_f64_to_bigdecimal(quote.yes_ask),
+        opt_f64_to_bigdecimal(quote.no_bid),
+        opt_f64_to_bigdecimal(quote.no_ask)
     )
     .execute(pool)
     .await?;
@@ -253,10 +275,10 @@ pub async fn get_quotes_5m(
         .map(|row| Quote {
             market_id: row.market_id,
             as_of: row.as_of,
-            yes_bid: row.yes_bid,
-            yes_ask: row.yes_ask,
-            no_bid: row.no_bid,
-            no_ask: row.no_ask,
+            yes_bid: opt_bigdecimal_to_f64(row.yes_bid),
+            yes_ask: opt_bigdecimal_to_f64(row.yes_ask),
+            no_bid: opt_bigdecimal_to_f64(row.no_bid),
+            no_ask: opt_bigdecimal_to_f64(row.no_ask),
             spread_yes: None,
             spread_no: None,
             mid_yes: None,

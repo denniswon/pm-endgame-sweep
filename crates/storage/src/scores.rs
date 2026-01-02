@@ -1,6 +1,8 @@
 //! Database operations for scores
 
+use bigdecimal::BigDecimal;
 use sqlx::PgPool;
+use std::str::FromStr;
 
 use pm_domain::Score;
 
@@ -16,6 +18,22 @@ pub enum ScoreError {
 }
 
 pub type Result<T> = std::result::Result<T, ScoreError>;
+
+/// Convert f64 to BigDecimal
+fn f64_to_bigdecimal(val: f64) -> BigDecimal {
+    BigDecimal::from_str(&val.to_string()).unwrap_or_else(|_| BigDecimal::from(0))
+}
+
+/// Convert Option<f64> to Option<BigDecimal>
+fn opt_f64_to_bigdecimal(val: Option<f64>) -> Option<BigDecimal> {
+    val.map(f64_to_bigdecimal)
+}
+
+/// Convert BigDecimal to f64
+#[allow(dead_code)]
+fn bigdecimal_to_f64(val: BigDecimal) -> f64 {
+    val.to_string().parse().unwrap_or(0.0)
+}
 
 /// Upsert score for a market
 pub async fn upsert_score(pool: &PgPool, score: &Score) -> Result<()> {
@@ -49,15 +67,15 @@ pub async fn upsert_score(pool: &PgPool, score: &Score) -> Result<()> {
         score.market_id,
         score.as_of,
         score.t_remaining_sec,
-        score.gross_yield,
-        score.fee_bps,
-        score.net_yield,
-        score.yield_velocity,
-        score.liquidity_score,
+        f64_to_bigdecimal(score.gross_yield),
+        f64_to_bigdecimal(score.fee_bps),
+        f64_to_bigdecimal(score.net_yield),
+        f64_to_bigdecimal(score.yield_velocity),
+        f64_to_bigdecimal(score.liquidity_score),
         score.staleness_sec,
-        score.staleness_penalty,
-        score.definition_risk_score,
-        score.overall_score,
+        f64_to_bigdecimal(score.staleness_penalty),
+        f64_to_bigdecimal(score.definition_risk_score),
+        f64_to_bigdecimal(score.overall_score),
         score_breakdown_json
     )
     .execute(pool)
@@ -105,15 +123,15 @@ pub async fn upsert_scores_batch(pool: &PgPool, scores: &[Score]) -> Result<()> 
             score.market_id,
             score.as_of,
             score.t_remaining_sec,
-            score.gross_yield,
-            score.fee_bps,
-            score.net_yield,
-            score.yield_velocity,
-            score.liquidity_score,
+            f64_to_bigdecimal(score.gross_yield),
+            f64_to_bigdecimal(score.fee_bps),
+            f64_to_bigdecimal(score.net_yield),
+            f64_to_bigdecimal(score.yield_velocity),
+            f64_to_bigdecimal(score.liquidity_score),
             score.staleness_sec,
-            score.staleness_penalty,
-            score.definition_risk_score,
-            score.overall_score,
+            f64_to_bigdecimal(score.staleness_penalty),
+            f64_to_bigdecimal(score.definition_risk_score),
+            f64_to_bigdecimal(score.overall_score),
             score_breakdown_json
         )
         .execute(&mut *tx)
@@ -186,7 +204,7 @@ pub async fn list_top_scores(
         LIMIT $3
         OFFSET $4
         "#,
-        min_score,
+        opt_f64_to_bigdecimal(min_score),
         max_t_remaining,
         limit,
         offset

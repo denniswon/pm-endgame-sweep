@@ -1,6 +1,8 @@
 //! Database operations for recommendations
 
+use bigdecimal::BigDecimal;
 use sqlx::PgPool;
+use std::str::FromStr;
 
 use pm_domain::Recommendation;
 
@@ -16,6 +18,16 @@ pub enum RecError {
 }
 
 pub type Result<T> = std::result::Result<T, RecError>;
+
+/// Convert f64 to BigDecimal
+fn f64_to_bigdecimal(val: f64) -> BigDecimal {
+    BigDecimal::from_str(&val.to_string()).unwrap_or_else(|_| BigDecimal::from(0))
+}
+
+/// Convert Option<f64> to Option<BigDecimal>
+fn opt_f64_to_bigdecimal(val: Option<f64>) -> Option<BigDecimal> {
+    val.map(f64_to_bigdecimal)
+}
 
 /// Upsert recommendation for a market
 pub async fn upsert_rec(pool: &PgPool, rec: &Recommendation) -> Result<()> {
@@ -44,10 +56,10 @@ pub async fn upsert_rec(pool: &PgPool, rec: &Recommendation) -> Result<()> {
         rec.market_id,
         rec.as_of,
         rec.recommended_side,
-        rec.entry_price,
-        rec.expected_payout,
-        rec.max_position_pct,
-        rec.risk_score,
+        f64_to_bigdecimal(rec.entry_price),
+        f64_to_bigdecimal(rec.expected_payout),
+        f64_to_bigdecimal(rec.max_position_pct),
+        f64_to_bigdecimal(rec.risk_score),
         risk_flags_json,
         rec.notes
     )
@@ -91,10 +103,10 @@ pub async fn upsert_recs_batch(pool: &PgPool, recs: &[Recommendation]) -> Result
             rec.market_id,
             rec.as_of,
             rec.recommended_side,
-            rec.entry_price,
-            rec.expected_payout,
-            rec.max_position_pct,
-            rec.risk_score,
+            f64_to_bigdecimal(rec.entry_price),
+            f64_to_bigdecimal(rec.expected_payout),
+            f64_to_bigdecimal(rec.max_position_pct),
+            f64_to_bigdecimal(rec.risk_score),
             risk_flags_json,
             rec.notes
         )
@@ -162,7 +174,7 @@ pub async fn list_top_recs(
         LIMIT $3
         OFFSET $4
         "#,
-        max_risk_score,
+        opt_f64_to_bigdecimal(max_risk_score),
         has_flags,
         limit,
         offset
