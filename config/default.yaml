@@ -1,0 +1,79 @@
+# PM Endgame Sweep - Default Configuration
+
+version: "0.1.0"
+
+# Database configuration
+database:
+  url: ${DATABASE_URL:-postgres://postgres:postgres@localhost:5432/pm_endgame}
+  max_connections: 10
+  min_connections: 2
+  acquire_timeout_sec: 30
+
+# Ingestion service
+ingest:
+  cadence:
+    quotes_sec: 60
+    discovery_sec: 1800
+    rules_refresh_sec: 3600
+
+  # Bounded resources
+  batch:
+    max_markets_per_discovery: 1000
+    max_quotes_per_fetch: 100
+    max_channel_size: 10000
+
+  # Retry configuration
+  retry:
+    max_attempts: 3
+    initial_delay_ms: 100
+    max_delay_ms: 5000
+    jitter: true
+
+# Scoring service
+scoring:
+  cadence_sec: 120
+
+  # Scoring weights
+  weights:
+    w1: 0.45  # yield velocity
+    w2: 0.25  # net yield
+    w3: 0.15  # liquidity
+    w4: 0.10  # definition risk
+    w5: 0.05  # staleness
+
+  # Bounds for eligibility
+  bounds:
+    min_t_remaining_sec: 3600      # 1 hour
+    max_t_remaining_sec: 1209600   # 14 days
+    quote_stale_max_sec: 180       # 3 minutes
+    min_t_days: 0.25               # 6 hours
+    spread_target: 0.02            # 2%
+
+  # Fee configuration
+  fee_bps: 120  # 1.2%
+
+  # Sizing
+  sizing:
+    base_position_pct: 0.10  # 10% max NAV
+
+# API service
+api:
+  host: "0.0.0.0"
+  port: 8080
+
+  # Pagination defaults
+  pagination:
+    default_limit: 50
+    max_limit: 200
+
+# Retention policy
+retention:
+  latest_only: true
+  samples_5m_enabled: true
+  samples_retention_days: 7
+
+# Observability
+observability:
+  log_level: "info"
+  log_format: "json"  # json | pretty
+  metrics_enabled: true
