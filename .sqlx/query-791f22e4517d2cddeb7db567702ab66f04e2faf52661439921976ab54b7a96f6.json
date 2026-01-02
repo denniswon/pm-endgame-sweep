@@ -1,0 +1,64 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n        SELECT\n            market_id, as_of, rule_text, rule_hash,\n            settlement_source, settlement_window,\n            definition_risk_score, risk_flags\n        FROM rules_latest\n        WHERE market_id = ANY($1)\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "market_id",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 1,
+        "name": "as_of",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 2,
+        "name": "rule_text",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 3,
+        "name": "rule_hash",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 4,
+        "name": "settlement_source",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 5,
+        "name": "settlement_window",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 6,
+        "name": "definition_risk_score",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 7,
+        "name": "risk_flags",
+        "type_info": "Jsonb"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "TextArray"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      true,
+      true,
+      false,
+      false
+    ]
+  },
+  "hash": "791f22e4517d2cddeb7db567702ab66f04e2faf52661439921976ab54b7a96f6"
+}

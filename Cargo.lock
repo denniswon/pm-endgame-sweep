@@ -171,6 +171,7 @@ dependencies = [
  "num-bigint",
  "num-integer",
  "num-traits",
+ "serde",
 ]
 
 [[package]]
@@ -1522,6 +1523,7 @@ dependencies = [
 name = "pm-storage"
 version = "0.1.0"
 dependencies = [
+ "bigdecimal",
  "chrono",
  "pm-domain",
  "serde",

@@ -1,0 +1,24 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n        INSERT INTO quotes_latest (\n            market_id, as_of, yes_bid, yes_ask, no_bid, no_ask,\n            spread_yes, spread_no, mid_yes, mid_no, quote_source\n        )\n        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)\n        ON CONFLICT (market_id)\n        DO UPDATE SET\n            as_of = EXCLUDED.as_of,\n            yes_bid = EXCLUDED.yes_bid,\n            yes_ask = EXCLUDED.yes_ask,\n            no_bid = EXCLUDED.no_bid,\n            no_ask = EXCLUDED.no_ask,\n            spread_yes = EXCLUDED.spread_yes,\n            spread_no = EXCLUDED.spread_no,\n            mid_yes = EXCLUDED.mid_yes,\n            mid_no = EXCLUDED.mid_no,\n            quote_source = EXCLUDED.quote_source,\n            updated_at = NOW()\n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Text",
+        "Timestamptz",
+        "Numeric",
+        "Numeric",
+        "Numeric",
+        "Numeric",
+        "Numeric",
+        "Numeric",
+        "Numeric",
+        "Numeric",
+        "Text"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "3af5d5ce47ce25505945b37be568348fe753fe06214e50971ef17319d62024db"
+}

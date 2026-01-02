@@ -47,6 +47,9 @@ thiserror = "1.0"
 # Time
 chrono = { version = "0.4", features = ["serde"] }
 
+# Numeric types
+bigdecimal = { version = "0.3", features = ["serde"] }
+
 # Crypto
 sha2 = "0.10"
 
