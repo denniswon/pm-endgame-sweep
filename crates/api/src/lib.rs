@@ -4,9 +4,11 @@
 
 pub mod config;
 pub mod handlers;
+pub mod metrics;
 pub mod server;
 pub mod state;
 
 pub use config::ApiConfig;
+pub use metrics::Metrics;
 pub use server::ApiServer;
 pub use state::AppState;

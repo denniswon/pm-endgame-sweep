@@ -9,7 +9,8 @@ use tower_http::trace::TraceLayer;
 
 use crate::{
     config::ApiConfig,
-    handlers::{health_handler, market_handler, opportunities_handler},
+    handlers::{health_handler, market_handler, metrics_handler, opportunities_handler},
+    metrics::Metrics,
     state::AppState,
 };
 
@@ -22,11 +23,14 @@ pub struct ApiServer {
 impl ApiServer {
     /// Create new API server
     pub fn new(pool: PgPool, config: ApiConfig) -> Self {
-        let state = AppState::new(pool, config.clone());
+        let metrics = Metrics::default();
+        let state = AppState::new(pool, config.clone(), metrics);
 
         let app = Router::new()
             // Health check
             .route("/health", get(health_handler))
+            // Metrics endpoint
+            .route("/metrics", get(metrics_handler))
             // API v1 routes
             .route("/v1/opportunities", get(opportunities_handler))
             .route("/v1/market/:market_id", get(market_handler))
