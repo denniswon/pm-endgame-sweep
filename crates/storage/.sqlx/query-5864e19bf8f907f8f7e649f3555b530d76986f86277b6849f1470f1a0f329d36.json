@@ -1,0 +1,97 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n        SELECT\n            market_id, as_of, t_remaining_sec, gross_yield, fee_bps,\n            net_yield, yield_velocity, liquidity_score,\n            staleness_sec, staleness_penalty, definition_risk_score,\n            overall_score, score_breakdown\n        FROM scores_latest\n        WHERE ($1::numeric IS NULL OR overall_score >= $1)\n          AND ($2::bigint IS NULL OR t_remaining_sec <= $2)\n        ORDER BY overall_score DESC\n        LIMIT $3\n        OFFSET $4\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "market_id",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 1,
+        "name": "as_of",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 2,
+        "name": "t_remaining_sec",
+        "type_info": "Int8"
+      },
+      {
+        "ordinal": 3,
+        "name": "gross_yield",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 4,
+        "name": "fee_bps",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 5,
+        "name": "net_yield",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 6,
+        "name": "yield_velocity",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 7,
+        "name": "liquidity_score",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 8,
+        "name": "staleness_sec",
+        "type_info": "Int8"
+      },
+      {
+        "ordinal": 9,
+        "name": "staleness_penalty",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 10,
+        "name": "definition_risk_score",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 11,
+        "name": "overall_score",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 12,
+        "name": "score_breakdown",
+        "type_info": "Jsonb"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Numeric",
+        "Int8",
+        "Int8",
+        "Int8"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "5864e19bf8f907f8f7e649f3555b530d76986f86277b6849f1470f1a0f329d36"
+}

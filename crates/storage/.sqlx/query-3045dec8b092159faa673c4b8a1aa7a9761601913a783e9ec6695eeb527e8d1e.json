@@ -1,0 +1,82 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n        SELECT\n            market_id, as_of, yes_bid, yes_ask, no_bid, no_ask,\n            spread_yes, spread_no, mid_yes, mid_no, quote_source\n        FROM quotes_latest\n        WHERE market_id = $1\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "market_id",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 1,
+        "name": "as_of",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 2,
+        "name": "yes_bid",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 3,
+        "name": "yes_ask",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 4,
+        "name": "no_bid",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 5,
+        "name": "no_ask",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 6,
+        "name": "spread_yes",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 7,
+        "name": "spread_no",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 8,
+        "name": "mid_yes",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 9,
+        "name": "mid_no",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 10,
+        "name": "quote_source",
+        "type_info": "Text"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Text"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      false
+    ]
+  },
+  "hash": "3045dec8b092159faa673c4b8a1aa7a9761601913a783e9ec6695eeb527e8d1e"
+}

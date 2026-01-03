@@ -1,0 +1,26 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            INSERT INTO scores_latest (\n                market_id, as_of, t_remaining_sec, gross_yield, fee_bps,\n                net_yield, yield_velocity, liquidity_score,\n                staleness_sec, staleness_penalty, definition_risk_score,\n                overall_score, score_breakdown\n            )\n            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)\n            ON CONFLICT (market_id)\n            DO UPDATE SET\n                as_of = EXCLUDED.as_of,\n                t_remaining_sec = EXCLUDED.t_remaining_sec,\n                gross_yield = EXCLUDED.gross_yield,\n                fee_bps = EXCLUDED.fee_bps,\n                net_yield = EXCLUDED.net_yield,\n                yield_velocity = EXCLUDED.yield_velocity,\n                liquidity_score = EXCLUDED.liquidity_score,\n                staleness_sec = EXCLUDED.staleness_sec,\n                staleness_penalty = EXCLUDED.staleness_penalty,\n                definition_risk_score = EXCLUDED.definition_risk_score,\n                overall_score = EXCLUDED.overall_score,\n                score_breakdown = EXCLUDED.score_breakdown,\n                updated_at = NOW()\n            ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Text",
+        "Timestamptz",
+        "Int8",
+        "Numeric",
+        "Numeric",
+        "Numeric",
+        "Numeric",
+        "Numeric",
+        "Int8",
+        "Numeric",
+        "Numeric",
+        "Numeric",
+        "Jsonb"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "cfbbd9a21a11bb81eb92293193d7ff1ea58843259c29a63670ddad868f436d9c"
+}

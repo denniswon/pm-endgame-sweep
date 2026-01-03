@@ -26,3 +26,4 @@ prometheus.workspace = true
 anyhow.workspace = true
 thiserror.workspace = true
 config.workspace = true
+sqlx.workspace = true

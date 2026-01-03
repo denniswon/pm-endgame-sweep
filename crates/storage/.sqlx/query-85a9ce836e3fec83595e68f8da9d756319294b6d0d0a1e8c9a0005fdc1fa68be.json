@@ -1,0 +1,25 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n        SELECT COUNT(*) as count\n        FROM recs_latest r\n        LEFT JOIN scores_latest s ON r.market_id = s.market_id\n        WHERE ($1::numeric IS NULL OR s.overall_score >= $1)\n          AND ($2::bigint IS NULL OR s.t_remaining_sec <= $2)\n          AND ($3::numeric IS NULL OR r.risk_score <= $3)\n          AND ($4::boolean IS NULL OR\n               ($4 = true AND jsonb_array_length(r.risk_flags) > 0) OR\n               ($4 = false AND jsonb_array_length(r.risk_flags) = 0))\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "count",
+        "type_info": "Int8"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Numeric",
+        "Int8",
+        "Numeric",
+        "Bool"
+      ]
+    },
+    "nullable": [
+      null
+    ]
+  },
+  "hash": "85a9ce836e3fec83595e68f8da9d756319294b6d0d0a1e8c9a0005fdc1fa68be"
+}

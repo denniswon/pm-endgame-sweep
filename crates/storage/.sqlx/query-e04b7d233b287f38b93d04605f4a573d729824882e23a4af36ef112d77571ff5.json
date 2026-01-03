@@ -1,0 +1,75 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n        SELECT\n            r.market_id, r.as_of, r.recommended_side, r.entry_price,\n            r.expected_payout, r.max_position_pct, r.risk_score,\n            r.risk_flags, r.notes\n        FROM recs_latest r\n        LEFT JOIN scores_latest s ON r.market_id = s.market_id\n        WHERE ($1::numeric IS NULL OR s.overall_score >= $1)\n          AND ($2::bigint IS NULL OR s.t_remaining_sec <= $2)\n          AND ($3::numeric IS NULL OR r.risk_score <= $3)\n          AND ($4::boolean IS NULL OR\n               ($4 = true AND jsonb_array_length(r.risk_flags) > 0) OR\n               ($4 = false AND jsonb_array_length(r.risk_flags) = 0))\n        ORDER BY s.overall_score DESC NULLS LAST\n        LIMIT $5\n        OFFSET $6\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "market_id",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 1,
+        "name": "as_of",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 2,
+        "name": "recommended_side",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 3,
+        "name": "entry_price",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 4,
+        "name": "expected_payout",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 5,
+        "name": "max_position_pct",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 6,
+        "name": "risk_score",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 7,
+        "name": "risk_flags",
+        "type_info": "Jsonb"
+      },
+      {
+        "ordinal": 8,
+        "name": "notes",
+        "type_info": "Text"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Numeric",
+        "Int8",
+        "Numeric",
+        "Bool",
+        "Int8",
+        "Int8"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true
+    ]
+  },
+  "hash": "e04b7d233b287f38b93d04605f4a573d729824882e23a4af36ef112d77571ff5"
+}
