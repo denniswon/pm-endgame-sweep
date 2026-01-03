@@ -1,0 +1,14 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n        DELETE FROM quotes_5m\n        WHERE bucket_start < $1\n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Timestamptz"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "175eada6664c4c9730d1b589aea193d14271e806a465f5f75ff5ce27337c3f2f"
+}

@@ -1,0 +1,21 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n        INSERT INTO rules_latest (\n            market_id, as_of, rule_text, rule_hash,\n            settlement_source, settlement_window,\n            definition_risk_score, risk_flags\n        )\n        VALUES ($1, $2, $3, $4, $5, $6, $7, $8)\n        ON CONFLICT (market_id)\n        DO UPDATE SET\n            as_of = EXCLUDED.as_of,\n            rule_text = EXCLUDED.rule_text,\n            rule_hash = EXCLUDED.rule_hash,\n            settlement_source = EXCLUDED.settlement_source,\n            settlement_window = EXCLUDED.settlement_window,\n            definition_risk_score = EXCLUDED.definition_risk_score,\n            risk_flags = EXCLUDED.risk_flags,\n            updated_at = NOW()\n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Text",
+        "Timestamptz",
+        "Text",
+        "Text",
+        "Text",
+        "Text",
+        "Numeric",
+        "Jsonb"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "20a01399a60403720700611ec9d30e99460ed45a9d8b7334eb2eca6d2f0dffab"
+}

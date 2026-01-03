@@ -2,7 +2,10 @@
 //!
 //! Read-only REST API for opportunities and market detail.
 
+use sqlx::postgres::PgPoolOptions;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
+
+use pm_api::{ApiConfig, ApiServer};
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
@@ -16,7 +19,26 @@ async fn main() -> anyhow::Result<()> {
 
     tracing::info!("pm-api starting");
 
-    // TODO: Initialize service
+    // Load configuration
+    let config = ApiConfig::default();
 
+    // Connect to database
+    let database_url = std::env::var("DATABASE_URL")
+        .unwrap_or_else(|_| "postgres://postgres:postgres@localhost:5432/pm_endgame".to_string());
+
+    let pool = PgPoolOptions::new()
+        .max_connections(10)
+        .min_connections(2)
+        .acquire_timeout(std::time::Duration::from_secs(30))
+        .connect(&database_url)
+        .await?;
+
+    tracing::info!("Connected to database");
+
+    // Create and run server
+    let server = ApiServer::new(pool, config);
+    server.run().await?;
+
+    tracing::info!("pm-api shutdown complete");
     Ok(())
 }

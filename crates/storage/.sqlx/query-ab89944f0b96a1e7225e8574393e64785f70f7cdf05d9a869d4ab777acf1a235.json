@@ -1,0 +1,73 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n        SELECT\n            market_id, as_of, recommended_side, entry_price,\n            expected_payout, max_position_pct, risk_score,\n            risk_flags, notes\n        FROM recs_latest\n        WHERE ($1::numeric IS NULL OR risk_score <= $1)\n          AND ($2::boolean IS NULL OR\n               ($2 = true AND jsonb_array_length(risk_flags) > 0) OR\n               ($2 = false AND jsonb_array_length(risk_flags) = 0))\n        ORDER BY risk_score ASC\n        LIMIT $3\n        OFFSET $4\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "market_id",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 1,
+        "name": "as_of",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 2,
+        "name": "recommended_side",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 3,
+        "name": "entry_price",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 4,
+        "name": "expected_payout",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 5,
+        "name": "max_position_pct",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 6,
+        "name": "risk_score",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 7,
+        "name": "risk_flags",
+        "type_info": "Jsonb"
+      },
+      {
+        "ordinal": 8,
+        "name": "notes",
+        "type_info": "Text"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Numeric",
+        "Bool",
+        "Int8",
+        "Int8"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true
+    ]
+  },
+  "hash": "ab89944f0b96a1e7225e8574393e64785f70f7cdf05d9a869d4ab777acf1a235"
+}
