@@ -7,23 +7,28 @@ on:
       - "crates/**"
       - "Cargo.toml"
       - "Cargo.lock"
+      - "migrations/**"
       - ".github/workflows/rust-ci.yml"
   pull_request:
-    branches: [main]
+    branches: [main, dev]
     paths:
       - "crates/**"
       - "Cargo.toml"
       - "Cargo.lock"
+      - "migrations/**"
       - ".github/workflows/rust-ci.yml"
+  workflow_call:
+
+concurrency:
+  group: rust-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 env:
   CARGO_TERM_COLOR: always
   RUST_BACKTRACE: 1
-  # Disable incremental compilation for CI (better caching)
   CARGO_INCREMENTAL: 0
 
 jobs:
-  # Fast feedback: Run clippy and fmt first
   lint:
     name: Lint (clippy + fmt)
     runs-on: ubuntu-latest
@@ -42,12 +47,8 @@ jobs:
       - name: Cache Rust dependencies
         uses: Swatinem/rust-cache@v2
         with:
-          # Cache key based on Cargo.lock
-          shared-key: "rust-ci"
-          # Cache cargo registry and git checkouts
+          shared-key: "rust-lint"
           cache-on-failure: true
-          # Save cache even if build fails
-          save-if: true
 
       - name: Check formatting
         run: cargo fmt --all -- --check
@@ -55,45 +56,10 @@ jobs:
       - name: Run clippy
         run: cargo clippy --workspace --all-targets --all-features -- -D warnings
 
-  # Security audit - run in parallel with other checks
-  security:
-    name: Security Audit
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    # Continue even if this fails (informational)
-    continue-on-error: true
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Install Rust toolchain
-        uses: dtolnay/rust-toolchain@nightly
-        with:
-          toolchain: nightly
-
-      - name: Cache cargo-audit
-        uses: actions/cache@v4
-        with:
-          path: ~/.cargo/bin/cargo-audit
-          key: ${{ runner.os }}-cargo-audit
-
-      - name: Install cargo-audit
-        run: cargo install cargo-audit --locked || true
-
-      - name: Run security audit
-        run: cargo audit --deny warnings || true
-
-  # Build and test
   test:
-    name: Test (${{ matrix.os }})
-    runs-on: ${{ matrix.os }}
+    name: Test
+    runs-on: ubuntu-latest
     timeout-minutes: 30
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest]
-        # Can add macos-latest, windows-latest for multi-platform testing
 
     services:
       postgres:
@@ -122,9 +88,8 @@ jobs:
       - name: Cache Rust dependencies
         uses: Swatinem/rust-cache@v2
         with:
-          shared-key: "rust-test-${{ matrix.os }}"
+          shared-key: "rust-test"
           cache-on-failure: true
-          save-if: true
 
       - name: Install sqlx-cli
         run: cargo install sqlx-cli --no-default-features --features postgres --locked || cargo install sqlx-cli --no-default-features --features postgres
@@ -142,12 +107,11 @@ jobs:
       - name: Run tests
         env:
           DATABASE_URL: postgres://postgres:postgres@localhost:5432/pm_endgame_test
-        run: cargo test --workspace --all-features -- --nocapture
+        run: cargo test --workspace --all-features
 
       - name: Run doc tests
         run: cargo test --workspace --doc
 
-  # Build check for release mode
   build-release:
     name: Build (release)
     runs-on: ubuntu-latest
@@ -172,10 +136,8 @@ jobs:
         run: cargo build --workspace --release --all-features
 
       - name: Check binary sizes
-        run: |
-          ls -lh target/release/pm-* || true
+        run: ls -lh target/release/pm-* || true
 
-  # Code coverage (optional, runs on main only)
   coverage:
     name: Code Coverage
     runs-on: ubuntu-latest
