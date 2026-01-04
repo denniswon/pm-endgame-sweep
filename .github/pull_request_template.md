@@ -1,4 +1,4 @@
-## Description
+# Description
 
 <!-- Provide a brief description of the changes in this PR -->
 
@@ -33,18 +33,22 @@ Fixes #
 <!-- Describe the testing you've done -->
 
 ### Unit Tests
+
 - [ ] Added/updated unit tests
 - [ ] All unit tests pass locally
 
 ### Integration Tests
+
 - [ ] Added/updated integration tests
 - [ ] All integration tests pass locally
 
 ### Manual Testing
+
 - [ ] Manually tested changes
 - [ ] Tested on multiple browsers (web changes only)
 
 ### Test Coverage
+
 - [ ] Coverage maintained or improved
 
 ## Checklist
@@ -52,12 +56,14 @@ Fixes #
 <!-- Mark completed items with an 'x' -->
 
 ### Code Quality
+
 - [ ] Code follows project style guidelines
 - [ ] Self-reviewed my own code
 - [ ] Commented complex code sections
 - [ ] No new warnings or errors
 
 ### Backend (if applicable)
+
 - [ ] `cargo fmt` passes
 - [ ] `cargo clippy` passes with no warnings
 - [ ] `cargo test` passes
@@ -65,6 +71,7 @@ Fixes #
 - [ ] SQLx offline mode updated (`cargo sqlx prepare`)
 
 ### Frontend (if applicable)
+
 - [ ] `yarn lint` passes
 - [ ] `yarn test` passes
 - [ ] `yarn build` succeeds
@@ -72,12 +79,14 @@ Fixes #
 - [ ] No console errors or warnings
 
 ### Documentation
+
 - [ ] Updated relevant documentation
 - [ ] Added/updated code comments
 - [ ] Updated README if needed
 - [ ] Added migration notes (if applicable)
 
 ### Security
+
 - [ ] No sensitive data exposed
 - [ ] No new dependencies with known vulnerabilities
 - [ ] Secrets properly handled (environment variables, not hardcoded)
@@ -111,6 +120,7 @@ Fixes #
 ---
 
 **Checklist for Reviewers:**
+
 - [ ] Code quality and style
 - [ ] Test coverage adequate
 - [ ] Documentation complete

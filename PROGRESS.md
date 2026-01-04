@@ -47,6 +47,7 @@ Last updated: 2026-01-01
 ### Phase E1: Storage + Schema (NEXT)
 
 Priority tasks:
+
 1. Test database migration on local PostgreSQL
 2. Implement storage layer CRUD operations:
    - `crates/storage/src/markets.rs`
@@ -60,6 +61,7 @@ Priority tasks:
 ### Phase E2: Polymarket Ingestion
 
 After E1 completes:
+
 1. Define VenueClient trait
 2. Implement Polymarket client
 3. Build discovery loop (30m cadence)
@@ -69,6 +71,7 @@ After E1 completes:
 ### Phase E3: Scoring + Risk
 
 After E1, E2 complete:
+
 1. Implement feature extraction
 2. Implement definition risk parsing
 3. Implement sizing guidance
@@ -77,6 +80,7 @@ After E1, E2 complete:
 ### Phase E4: API Service
 
 After E1, E3 complete:
+
 1. Implement `/v1/opportunities` endpoint
 2. Implement `/v1/market/:id` endpoint
 3. Implement `/v1/config` endpoint
@@ -85,6 +89,7 @@ After E1, E3 complete:
 ### Phase E5: Next.js UI
 
 After E4 completes:
+
 1. Create opportunities table page
 2. Create market detail page
 3. Add filters and auto-refresh
@@ -92,6 +97,7 @@ After E4 completes:
 ### Phase E6: Hardening
 
 Final phase:
+
 1. Add comprehensive tracing
 2. Implement graceful shutdown
 3. Load test with 50k markets
@@ -99,19 +105,20 @@ Final phase:
 
 ## Architecture Decisions
 
-| Decision | Choice | Rationale |
-|----------|--------|-----------|
-| Language | Rust + TypeScript | Rust for services (perf, safety), TS for UI |
-| Database | PostgreSQL | Strong JSON support, good SQLx integration |
-| API Framework | Axum | Fast, type-safe, good ecosystem |
-| ORM | SQLx | Compile-time checked queries, no runtime overhead |
-| UI Framework | Next.js | Fast, good DX, SSR support |
-| Quote Storage | `*_latest` + 5m samples | Bounded growth, fast reads |
-| Retry Strategy | Exponential backoff + jitter | Industry standard for resilience |
+| Decision       | Choice                       | Rationale                                         |
+| -------------- | ---------------------------- | ------------------------------------------------- |
+| Language       | Rust + TypeScript            | Rust for services (perf, safety), TS for UI       |
+| Database       | PostgreSQL                   | Strong JSON support, good SQLx integration        |
+| API Framework  | Axum                         | Fast, type-safe, good ecosystem                   |
+| ORM            | SQLx                         | Compile-time checked queries, no runtime overhead |
+| UI Framework   | Next.js                      | Fast, good DX, SSR support                        |
+| Quote Storage  | `*_latest` + 5m samples      | Bounded growth, fast reads                        |
+| Retry Strategy | Exponential backoff + jitter | Industry standard for resilience                  |
 
 ## Quality Gates
 
 All phases must meet:
+
 - ✅ `cargo fmt --check` passes
 - ✅ `cargo clippy -- -D warnings` passes
 - ✅ `cargo test` passes
@@ -122,12 +129,12 @@ All phases must meet:
 
 ## Risk Log
 
-| Risk | Mitigation | Status |
-|------|------------|--------|
-| Polymarket API changes | VenueClient trait isolation | Mitigated |
-| DB migration conflicts | SQLx offline mode + compile-time checks | Mitigated |
-| Unbounded memory growth | Explicit batch size caps | Mitigated |
-| Scoring performance | Bounded batches, parallel processing | Pending E3 |
+| Risk                    | Mitigation                              | Status     |
+| ----------------------- | --------------------------------------- | ---------- |
+| Polymarket API changes  | VenueClient trait isolation             | Mitigated  |
+| DB migration conflicts  | SQLx offline mode + compile-time checks | Mitigated  |
+| Unbounded memory growth | Explicit batch size caps                | Mitigated  |
+| Scoring performance     | Bounded batches, parallel processing    | Pending E3 |
 
 ## Timeline Estimate
 

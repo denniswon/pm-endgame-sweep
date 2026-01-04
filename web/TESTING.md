@@ -17,6 +17,7 @@ This document outlines the testing strategy for the Next.js frontend application
 ### Core Testing Framework: Vitest + React Testing Library
 
 **Why Vitest?**
+
 - ✅ Native ESM support (works perfectly with Next.js 15)
 - ✅ Compatible with Vite/Turbopack ecosystem
 - ✅ Jest-compatible API (easy migration if needed)
@@ -25,6 +26,7 @@ This document outlines the testing strategy for the Next.js frontend application
 - ✅ Watch mode with HMR-like experience
 
 **Why React Testing Library?**
+
 - ✅ Encourages testing user behavior over implementation details
 - ✅ Works seamlessly with React 19 and Server Components
 - ✅ Industry standard for React testing
@@ -43,56 +45,58 @@ This document outlines the testing strategy for the Next.js frontend application
 ### 1. Unit Tests (70% of test coverage)
 
 **What to test:**
+
 - Pure utility functions (`lib/utils.ts`)
 - Data transformations
 - Type guards and validators
 - Formatting functions
 
 **Example:**
+
 ```typescript
 // lib/utils.test.ts
-import { describe, it, expect } from 'vitest';
-import { formatPercent, formatDuration, getRiskColor } from './utils';
+import { describe, it, expect } from "vitest";
+import { formatPercent, formatDuration, getRiskColor } from "./utils";
 
-describe('formatPercent', () => {
-  it('formats decimal to percentage with 2 decimals', () => {
-    expect(formatPercent(0.1234)).toBe('12.34%');
+describe("formatPercent", () => {
+  it("formats decimal to percentage with 2 decimals", () => {
+    expect(formatPercent(0.1234)).toBe("12.34%");
   });
 
-  it('handles zero correctly', () => {
-    expect(formatPercent(0)).toBe('0.00%');
+  it("handles zero correctly", () => {
+    expect(formatPercent(0)).toBe("0.00%");
   });
 
-  it('handles 1.0 correctly', () => {
-    expect(formatPercent(1.0)).toBe('100.00%');
-  });
-});
-
-describe('formatDuration', () => {
-  it('formats days and hours', () => {
-    expect(formatDuration(90000)).toBe('1d 1h'); // 25 hours
-  });
-
-  it('formats hours and minutes', () => {
-    expect(formatDuration(3700)).toBe('1h 1m');
-  });
-
-  it('formats only minutes', () => {
-    expect(formatDuration(120)).toBe('2m');
+  it("handles 1.0 correctly", () => {
+    expect(formatPercent(1.0)).toBe("100.00%");
   });
 });
 
-describe('getRiskColor', () => {
-  it('returns red for high risk', () => {
-    expect(getRiskColor(0.8)).toBe('text-red-600 bg-red-50');
+describe("formatDuration", () => {
+  it("formats days and hours", () => {
+    expect(formatDuration(90000)).toBe("1d 1h"); // 25 hours
   });
 
-  it('returns yellow for medium risk', () => {
-    expect(getRiskColor(0.5)).toBe('text-yellow-600 bg-yellow-50');
+  it("formats hours and minutes", () => {
+    expect(formatDuration(3700)).toBe("1h 1m");
   });
 
-  it('returns green for low risk', () => {
-    expect(getRiskColor(0.2)).toBe('text-green-600 bg-green-50');
+  it("formats only minutes", () => {
+    expect(formatDuration(120)).toBe("2m");
+  });
+});
+
+describe("getRiskColor", () => {
+  it("returns red for high risk", () => {
+    expect(getRiskColor(0.8)).toBe("text-red-600 bg-red-50");
+  });
+
+  it("returns yellow for medium risk", () => {
+    expect(getRiskColor(0.5)).toBe("text-yellow-600 bg-yellow-50");
+  });
+
+  it("returns green for low risk", () => {
+    expect(getRiskColor(0.2)).toBe("text-green-600 bg-green-50");
   });
 });
 ```
@@ -100,6 +104,7 @@ describe('getRiskColor', () => {
 ### 2. Component Tests (25% of test coverage)
 
 **What to test:**
+
 - Component rendering with different props
 - User interactions (clicks, form inputs)
 - Conditional rendering
@@ -107,56 +112,58 @@ describe('getRiskColor', () => {
 - Accessibility (a11y)
 
 **Example:**
+
 ```typescript
 // components/ui/badge.test.tsx
-import { describe, it, expect } from 'vitest';
-import { render, screen } from '@testing-library/react';
-import { Badge } from './badge';
+import { describe, it, expect } from "vitest";
+import { render, screen } from "@testing-library/react";
+import { Badge } from "./badge";
 
-describe('Badge', () => {
-  it('renders children correctly', () => {
+describe("Badge", () => {
+  it("renders children correctly", () => {
     render(<Badge>Test Badge</Badge>);
-    expect(screen.getByText('Test Badge')).toBeInTheDocument();
+    expect(screen.getByText("Test Badge")).toBeInTheDocument();
   });
 
-  it('applies default variant styles', () => {
+  it("applies default variant styles", () => {
     render(<Badge>Default</Badge>);
-    const badge = screen.getByText('Default');
-    expect(badge).toHaveClass('bg-primary');
+    const badge = screen.getByText("Default");
+    expect(badge).toHaveClass("bg-primary");
   });
 
-  it('applies destructive variant styles', () => {
+  it("applies destructive variant styles", () => {
     render(<Badge variant="destructive">Error</Badge>);
-    const badge = screen.getByText('Error');
-    expect(badge).toHaveClass('bg-destructive');
+    const badge = screen.getByText("Error");
+    expect(badge).toHaveClass("bg-destructive");
   });
 
-  it('merges custom className', () => {
+  it("merges custom className", () => {
     render(<Badge className="custom-class">Custom</Badge>);
-    const badge = screen.getByText('Custom');
-    expect(badge).toHaveClass('custom-class');
+    const badge = screen.getByText("Custom");
+    expect(badge).toHaveClass("custom-class");
   });
 });
 ```
 
 **Example: Testing with SWR**
+
 ```typescript
 // components/features/opportunities-table.test.tsx
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
-import { SWRConfig } from 'swr';
-import { OpportunitiesTable } from './opportunities-table';
-import * as api from '@/lib/api';
+import { describe, it, expect, vi, beforeEach } from "vitest";
+import { render, screen, waitFor } from "@testing-library/react";
+import { SWRConfig } from "swr";
+import { OpportunitiesTable } from "./opportunities-table";
+import * as api from "@/lib/api";
 
 // Mock the API
-vi.mock('@/lib/api');
+vi.mock("@/lib/api");
 
 const mockOpportunities = {
   opportunities: [
     {
-      market_id: 'test-market-1',
-      as_of: '2024-01-01T00:00:00Z',
-      recommended_side: 'YES',
+      market_id: "test-market-1",
+      as_of: "2024-01-01T00:00:00Z",
+      recommended_side: "YES",
       entry_price: 0.65,
       expected_payout: 0.85,
       max_position_pct: 0.1,
@@ -169,12 +176,12 @@ const mockOpportunities = {
   offset: 0,
 };
 
-describe('OpportunitiesTable', () => {
+describe("OpportunitiesTable", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  it('displays loading state initially', () => {
+  it("displays loading state initially", () => {
     vi.mocked(api.getOpportunities).mockImplementation(
       () => new Promise(() => {}) // Never resolves
     );
@@ -185,10 +192,10 @@ describe('OpportunitiesTable', () => {
       </SWRConfig>
     );
 
-    expect(screen.getAllByRole('status')).toHaveLength(5); // 5 skeleton rows
+    expect(screen.getAllByRole("status")).toHaveLength(5); // 5 skeleton rows
   });
 
-  it('displays opportunities when loaded', async () => {
+  it("displays opportunities when loaded", async () => {
     vi.mocked(api.getOpportunities).mockResolvedValue(mockOpportunities);
 
     render(
@@ -201,14 +208,12 @@ describe('OpportunitiesTable', () => {
       expect(screen.getByText(/test-market-1/)).toBeInTheDocument();
     });
 
-    expect(screen.getByText('YES')).toBeInTheDocument();
-    expect(screen.getByText('65.00%')).toBeInTheDocument();
+    expect(screen.getByText("YES")).toBeInTheDocument();
+    expect(screen.getByText("65.00%")).toBeInTheDocument();
   });
 
-  it('displays error state on fetch failure', async () => {
-    vi.mocked(api.getOpportunities).mockRejectedValue(
-      new Error('API Error')
-    );
+  it("displays error state on fetch failure", async () => {
+    vi.mocked(api.getOpportunities).mockRejectedValue(new Error("API Error"));
 
     render(
       <SWRConfig value={{ provider: () => new Map() }}>
@@ -217,11 +222,13 @@ describe('OpportunitiesTable', () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText(/Failed to load opportunities/)).toBeInTheDocument();
+      expect(
+        screen.getByText(/Failed to load opportunities/)
+      ).toBeInTheDocument();
     });
   });
 
-  it('displays empty state when no opportunities', async () => {
+  it("displays empty state when no opportunities", async () => {
     vi.mocked(api.getOpportunities).mockResolvedValue({
       ...mockOpportunities,
       opportunities: [],
@@ -235,7 +242,9 @@ describe('OpportunitiesTable', () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText(/No opportunities available/)).toBeInTheDocument();
+      expect(
+        screen.getByText(/No opportunities available/)
+      ).toBeInTheDocument();
     });
   });
 });
@@ -244,26 +253,28 @@ describe('OpportunitiesTable', () => {
 ### 3. Integration Tests with MSW (Mock Service Worker)
 
 **What to test:**
+
 - API integration flows
 - Data fetching and caching (SWR)
 - Error handling with real HTTP responses
 - Loading states during data fetching
 
 **Setup:**
+
 ```typescript
 // tests/setup.ts
-import { afterAll, afterEach, beforeAll } from 'vitest';
-import { setupServer } from 'msw/node';
-import { http, HttpResponse } from 'msw';
+import { afterAll, afterEach, beforeAll } from "vitest";
+import { setupServer } from "msw/node";
+import { http, HttpResponse } from "msw";
 
 const handlers = [
-  http.get('http://localhost:3000/v1/opportunities', () => {
+  http.get("http://localhost:3000/v1/opportunities", () => {
     return HttpResponse.json({
       opportunities: [
         {
-          market_id: 'test-market-1',
-          as_of: '2024-01-01T00:00:00Z',
-          recommended_side: 'YES',
+          market_id: "test-market-1",
+          as_of: "2024-01-01T00:00:00Z",
+          recommended_side: "YES",
           entry_price: 0.65,
           expected_payout: 0.85,
           max_position_pct: 0.1,
@@ -277,18 +288,18 @@ const handlers = [
     });
   }),
 
-  http.get('http://localhost:3000/v1/market/:id', ({ params }) => {
+  http.get("http://localhost:3000/v1/market/:id", ({ params }) => {
     return HttpResponse.json({
       market: {
         market_id: params.id,
-        question: 'Test Market?',
-        end_date: '2024-12-31T23:59:59Z',
-        close_time: '2024-12-31T23:59:59Z',
+        question: "Test Market?",
+        end_date: "2024-12-31T23:59:59Z",
+        close_time: "2024-12-31T23:59:59Z",
         volume: 100000,
         liquidity: 50000,
         active: true,
-        created_at: '2024-01-01T00:00:00Z',
-        updated_at: '2024-01-01T00:00:00Z',
+        created_at: "2024-01-01T00:00:00Z",
+        updated_at: "2024-01-01T00:00:00Z",
       },
       quote: null,
       score: null,
@@ -299,50 +310,53 @@ const handlers = [
 
 export const server = setupServer(...handlers);
 
-beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
+beforeAll(() => server.listen({ onUnhandledRequest: "error" }));
 afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
 ```
 
 **Example Integration Test:**
+
 ```typescript
 // lib/api.integration.test.ts
-import { describe, it, expect } from 'vitest';
-import { server } from '../tests/setup';
-import { http, HttpResponse } from 'msw';
-import { getOpportunities, getMarket } from './api';
+import { describe, it, expect } from "vitest";
+import { server } from "../tests/setup";
+import { http, HttpResponse } from "msw";
+import { getOpportunities, getMarket } from "./api";
 
-describe('API Integration', () => {
-  it('fetches opportunities successfully', async () => {
+describe("API Integration", () => {
+  it("fetches opportunities successfully", async () => {
     const data = await getOpportunities();
 
     expect(data.opportunities).toHaveLength(1);
-    expect(data.opportunities[0].market_id).toBe('test-market-1');
+    expect(data.opportunities[0].market_id).toBe("test-market-1");
     expect(data.total).toBe(1);
   });
 
-  it('handles opportunities fetch error', async () => {
+  it("handles opportunities fetch error", async () => {
     server.use(
-      http.get('http://localhost:3000/v1/opportunities', () => {
+      http.get("http://localhost:3000/v1/opportunities", () => {
         return new HttpResponse(null, { status: 500 });
       })
     );
 
-    await expect(getOpportunities()).rejects.toThrow('Failed to fetch opportunities');
+    await expect(getOpportunities()).rejects.toThrow(
+      "Failed to fetch opportunities"
+    );
   });
 
-  it('fetches market details successfully', async () => {
-    const data = await getMarket('test-market-1');
+  it("fetches market details successfully", async () => {
+    const data = await getMarket("test-market-1");
 
-    expect(data.market.market_id).toBe('test-market-1');
-    expect(data.market.question).toBe('Test Market?');
+    expect(data.market.market_id).toBe("test-market-1");
+    expect(data.market.question).toBe("Test Market?");
   });
 
-  it('passes query parameters correctly', async () => {
+  it("passes query parameters correctly", async () => {
     let capturedUrl: URL | undefined;
 
     server.use(
-      http.get('http://localhost:3000/v1/opportunities', ({ request }) => {
+      http.get("http://localhost:3000/v1/opportunities", ({ request }) => {
         capturedUrl = new URL(request.url);
         return HttpResponse.json({
           opportunities: [],
@@ -360,10 +374,10 @@ describe('API Integration', () => {
       offset: 5,
     });
 
-    expect(capturedUrl?.searchParams.get('min_score')).toBe('0.5');
-    expect(capturedUrl?.searchParams.get('max_risk_score')).toBe('0.7');
-    expect(capturedUrl?.searchParams.get('limit')).toBe('10');
-    expect(capturedUrl?.searchParams.get('offset')).toBe('5');
+    expect(capturedUrl?.searchParams.get("min_score")).toBe("0.5");
+    expect(capturedUrl?.searchParams.get("max_risk_score")).toBe("0.7");
+    expect(capturedUrl?.searchParams.get("limit")).toBe("10");
+    expect(capturedUrl?.searchParams.get("offset")).toBe("5");
   });
 });
 ```
@@ -371,53 +385,61 @@ describe('API Integration', () => {
 ### 4. E2E Tests with Playwright (5% - Critical Paths Only)
 
 **What to test:**
+
 - Complete user journeys
 - Cross-browser compatibility
 - Performance and load times
 - Visual regression (screenshots)
 
 **Example:**
+
 ```typescript
 // e2e/opportunities.spec.ts
-import { test, expect } from '@playwright/test';
+import { test, expect } from "@playwright/test";
 
-test.describe('Opportunities Dashboard', () => {
+test.describe("Opportunities Dashboard", () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('http://localhost:3001');
+    await page.goto("http://localhost:3001");
   });
 
-  test('loads and displays opportunities', async ({ page }) => {
+  test("loads and displays opportunities", async ({ page }) => {
     // Wait for data to load
-    await expect(page.getByRole('table')).toBeVisible();
+    await expect(page.getByRole("table")).toBeVisible();
 
     // Check table headers
-    await expect(page.getByRole('columnheader', { name: 'Market ID' })).toBeVisible();
-    await expect(page.getByRole('columnheader', { name: 'Side' })).toBeVisible();
-    await expect(page.getByRole('columnheader', { name: 'Risk Score' })).toBeVisible();
+    await expect(
+      page.getByRole("columnheader", { name: "Market ID" })
+    ).toBeVisible();
+    await expect(
+      page.getByRole("columnheader", { name: "Side" })
+    ).toBeVisible();
+    await expect(
+      page.getByRole("columnheader", { name: "Risk Score" })
+    ).toBeVisible();
 
     // Check at least one row is present
-    const rows = page.getByRole('row');
+    const rows = page.getByRole("row");
     await expect(rows).toHaveCount.greaterThan(1); // Header + at least 1 data row
   });
 
-  test('navigates to market details', async ({ page }) => {
+  test("navigates to market details", async ({ page }) => {
     // Wait for table to load
-    await expect(page.getByRole('table')).toBeVisible();
+    await expect(page.getByRole("table")).toBeVisible();
 
     // Click on first market link
-    const firstMarketLink = page.getByRole('link').first();
+    const firstMarketLink = page.getByRole("link").first();
     await firstMarketLink.click();
 
     // Verify navigation
     await expect(page).toHaveURL(/\/market\/.+/);
 
     // Verify market details are displayed
-    await expect(page.getByText('Back to opportunities')).toBeVisible();
+    await expect(page.getByText("Back to opportunities")).toBeVisible();
   });
 
-  test('auto-refreshes data every 30 seconds', async ({ page }) => {
+  test("auto-refreshes data every 30 seconds", async ({ page }) => {
     // Wait for initial load
-    await expect(page.getByRole('table')).toBeVisible();
+    await expect(page.getByRole("table")).toBeVisible();
 
     // Note: This is a simplified test. In practice, you'd mock time or
     // intercept network requests to verify refresh behavior
@@ -427,48 +449,48 @@ test.describe('Opportunities Dashboard', () => {
     // This would require setting up request interception
   });
 
-  test('displays error state on API failure', async ({ page, context }) => {
+  test("displays error state on API failure", async ({ page, context }) => {
     // Intercept API requests and return error
-    await context.route('**/v1/opportunities*', (route) => {
+    await context.route("**/v1/opportunities*", (route) => {
       route.fulfill({ status: 500 });
     });
 
-    await page.goto('http://localhost:3001');
+    await page.goto("http://localhost:3001");
 
     // Verify error message is displayed
     await expect(page.getByText(/Failed to load opportunities/)).toBeVisible();
   });
 
-  test('is mobile responsive', async ({ page }) => {
+  test("is mobile responsive", async ({ page }) => {
     // Set mobile viewport
     await page.setViewportSize({ width: 375, height: 667 });
 
-    await expect(page.getByRole('table')).toBeVisible();
+    await expect(page.getByRole("table")).toBeVisible();
 
     // Verify table is scrollable on mobile
-    const table = page.getByRole('table');
+    const table = page.getByRole("table");
     const boundingBox = await table.boundingBox();
     expect(boundingBox?.width).toBeLessThanOrEqual(375);
   });
 });
 
-test.describe('Market Details Page', () => {
-  test('displays comprehensive market information', async ({ page }) => {
+test.describe("Market Details Page", () => {
+  test("displays comprehensive market information", async ({ page }) => {
     // Navigate to a specific market
-    await page.goto('http://localhost:3001/market/test-market-id');
+    await page.goto("http://localhost:3001/market/test-market-id");
 
     // Verify different sections are present
-    await expect(page.getByText('Current Quotes')).toBeVisible();
-    await expect(page.getByText('Score Breakdown')).toBeVisible();
-    await expect(page.getByText('Recommendation')).toBeVisible();
+    await expect(page.getByText("Current Quotes")).toBeVisible();
+    await expect(page.getByText("Score Breakdown")).toBeVisible();
+    await expect(page.getByText("Recommendation")).toBeVisible();
   });
 
-  test('back button returns to opportunities', async ({ page }) => {
-    await page.goto('http://localhost:3001/market/test-market-id');
+  test("back button returns to opportunities", async ({ page }) => {
+    await page.goto("http://localhost:3001/market/test-market-id");
 
-    await page.getByText('Back to opportunities').click();
+    await page.getByText("Back to opportunities").click();
 
-    await expect(page).toHaveURL('http://localhost:3001');
+    await expect(page).toHaveURL("http://localhost:3001");
   });
 });
 ```
@@ -479,26 +501,26 @@ test.describe('Market Details Page', () => {
 
 ```typescript
 // vitest.config.ts
-import { defineConfig } from 'vitest/config';
-import react from '@vitejs/plugin-react';
-import path from 'path';
+import { defineConfig } from "vitest/config";
+import react from "@vitejs/plugin-react";
+import path from "path";
 
 export default defineConfig({
   plugins: [react()],
   test: {
     globals: true,
-    environment: 'happy-dom',
-    setupFiles: ['./tests/setup.ts'],
+    environment: "happy-dom",
+    setupFiles: ["./tests/setup.ts"],
     coverage: {
-      provider: 'v8',
-      reporter: ['text', 'json', 'html'],
+      provider: "v8",
+      reporter: ["text", "json", "html"],
       exclude: [
-        'node_modules/',
-        'tests/',
-        '**/*.config.ts',
-        '**/*.d.ts',
-        '**/types/',
-        '.next/',
+        "node_modules/",
+        "tests/",
+        "**/*.config.ts",
+        "**/*.d.ts",
+        "**/types/",
+        ".next/",
       ],
       thresholds: {
         lines: 80,
@@ -507,12 +529,12 @@ export default defineConfig({
         statements: 80,
       },
     },
-    include: ['**/*.{test,spec}.{ts,tsx}'],
-    exclude: ['node_modules', '.next', 'e2e'],
+    include: ["**/*.{test,spec}.{ts,tsx}"],
+    exclude: ["node_modules", ".next", "e2e"],
   },
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './'),
+      "@": path.resolve(__dirname, "./"),
     },
   },
 });
@@ -522,44 +544,44 @@ export default defineConfig({
 
 ```typescript
 // playwright.config.ts
-import { defineConfig, devices } from '@playwright/test';
+import { defineConfig, devices } from "@playwright/test";
 
 export default defineConfig({
-  testDir: './e2e',
+  testDir: "./e2e",
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
   workers: process.env.CI ? 1 : undefined,
-  reporter: 'html',
+  reporter: "html",
 
   use: {
-    baseURL: 'http://localhost:3001',
-    trace: 'on-first-retry',
-    screenshot: 'only-on-failure',
+    baseURL: "http://localhost:3001",
+    trace: "on-first-retry",
+    screenshot: "only-on-failure",
   },
 
   projects: [
     {
-      name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
+      name: "chromium",
+      use: { ...devices["Desktop Chrome"] },
     },
     {
-      name: 'firefox',
-      use: { ...devices['Desktop Firefox'] },
+      name: "firefox",
+      use: { ...devices["Desktop Firefox"] },
     },
     {
-      name: 'webkit',
-      use: { ...devices['Desktop Safari'] },
+      name: "webkit",
+      use: { ...devices["Desktop Safari"] },
     },
     {
-      name: 'Mobile Chrome',
-      use: { ...devices['Pixel 5'] },
+      name: "Mobile Chrome",
+      use: { ...devices["Pixel 5"] },
     },
   ],
 
   webServer: {
-    command: 'yarn dev',
-    url: 'http://localhost:3001',
+    command: "yarn dev",
+    url: "http://localhost:3001",
     reuseExistingServer: !process.env.CI,
   },
 });
@@ -608,8 +630,8 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '22'
-          cache: 'yarn'
+          node-version: "22"
+          cache: "yarn"
 
       - name: Install dependencies
         run: yarn install --frozen-lockfile
@@ -639,11 +661,13 @@ jobs:
 ## Best Practices
 
 ### 1. Test Isolation
+
 - Each test should be independent
 - Use `beforeEach` to reset state
 - Don't rely on test execution order
 
 ### 2. Descriptive Test Names
+
 ```typescript
 // ❌ Bad
 it('works', () => { ... });
@@ -653,8 +677,9 @@ it('displays error message when API returns 500', () => { ... });
 ```
 
 ### 3. Arrange-Act-Assert Pattern
+
 ```typescript
-it('formats percentage correctly', () => {
+it("formats percentage correctly", () => {
   // Arrange
   const input = 0.1234;
 
@@ -662,36 +687,38 @@ it('formats percentage correctly', () => {
   const result = formatPercent(input);
 
   // Assert
-  expect(result).toBe('12.34%');
+  expect(result).toBe("12.34%");
 });
 ```
 
 ### 4. Test User Behavior, Not Implementation
+
 ```typescript
 // ❌ Bad - Testing implementation
 expect(component.state.isLoading).toBe(true);
 
 // ✅ Good - Testing user-visible behavior
-expect(screen.getByRole('status')).toBeInTheDocument();
+expect(screen.getByRole("status")).toBeInTheDocument();
 ```
 
 ### 5. Use Testing Library Queries Properly
+
 ```typescript
 // Priority order (from most to least preferred):
 // 1. getByRole (most accessible)
-screen.getByRole('button', { name: 'Submit' });
+screen.getByRole("button", { name: "Submit" });
 
 // 2. getByLabelText (forms)
-screen.getByLabelText('Email address');
+screen.getByLabelText("Email address");
 
 // 3. getByPlaceholderText
-screen.getByPlaceholderText('Enter email');
+screen.getByPlaceholderText("Enter email");
 
 // 4. getByText
-screen.getByText('Welcome');
+screen.getByText("Welcome");
 
 // 5. getByTestId (last resort)
-screen.getByTestId('custom-element');
+screen.getByTestId("custom-element");
 ```
 
 ## Dependencies to Add

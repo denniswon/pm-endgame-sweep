@@ -1,0 +1,11 @@
+# cargo-audit configuration
+# https://docs.rs/cargo-audit/latest/cargo_audit/
+
+[advisories]
+# RUSTSEC-2023-0071: Marvin Attack in rsa crate (timing sidechannel)
+# This comes from sqlx-mysql which is pulled in by sqlx-macros-core unconditionally,
+# even though we only use PostgreSQL (default-features = false, features = ["postgres"]).
+# The vulnerable code path is not exercised in our application.
+# No upstream fix is available - https://rustsec.org/advisories/RUSTSEC-2023-0071
+# Remove this ignore when sqlx updates or rsa releases a patched version.
+ignore = ["RUSTSEC-2023-0071"]

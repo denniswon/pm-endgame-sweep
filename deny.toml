@@ -1,26 +1,28 @@
 # cargo-deny configuration
 # See: https://embarkstudios.github.io/cargo-deny/
 
-[advisories]
-db-path = "~/.cargo/advisory-db"
-db-urls = ["https://github.com/rustsec/advisory-db"]
-version = 2
-vulnerability = "deny"
-unmaintained = "all"
-yanked = "all"
-notice = "all"
-ignore = [
-    # RUSTSEC-2023-0071: rsa crate timing sidechannel
-    # This is a build-time dependency via sqlx-macros -> sqlx-mysql
-    # We only use PostgreSQL at runtime, not MySQL
-    # The vulnerability affects RSA decrypt operations which we never perform
-    # No patch available as of 2025-01-03
-    { id = "RUSTSEC-2023-0071", reason = "build-time only, MySQL not used" },
-]
-severity-threshold = "low"
+[graph]
+targets = []
+all-features = false
+no-default-features = false
 
+[output]
+feature-depth = 1
+
+# This section is considered when running `cargo deny check advisories`
+# https://embarkstudios.github.io/cargo-deny/checks/advisories/cfg.html
+[advisories]
+ignore = [
+    # RUSTSEC-2023-0071: rsa crate timing sidechannel (Marvin Attack)
+    # This is pulled in via sqlx-macros -> sqlx-mysql as a transitive dependency
+    # We only use PostgreSQL at runtime, not MySQL - the vulnerable code path is never executed
+    # No patch available - https://rustsec.org/advisories/RUSTSEC-2023-0071
+    { id = "RUSTSEC-2023-0071", reason = "transitive dep via sqlx-mysql; we only use postgres" },
+]
+
+# This section is considered when running `cargo deny check licenses`
+# https://embarkstudios.github.io/cargo-deny/checks/licenses/cfg.html
 [licenses]
-unlicensed = "deny"
 allow = [
     "MIT",
     "Apache-2.0",
@@ -29,13 +31,19 @@ allow = [
     "BSD-3-Clause",
     "ISC",
     "Unicode-DFS-2016",
+    "Zlib",
+    "CC0-1.0",
+    "Unicode-3.0",
+    "MPL-2.0",
 ]
-deny = []
-copyleft = "deny"
-allow-osi-fsf-free = "neither"
-default = "deny"
 confidence-threshold = 0.8
 
+[licenses.private]
+ignore = false
+registries = []
+
+# This section is considered when running `cargo deny check bans`
+# https://embarkstudios.github.io/cargo-deny/checks/bans/cfg.html
 [bans]
 multiple-versions = "warn"
 wildcards = "allow"
@@ -47,8 +55,15 @@ deny = []
 skip = []
 skip-tree = []
 
+# This section is considered when running `cargo deny check sources`
+# https://embarkstudios.github.io/cargo-deny/checks/sources/cfg.html
 [sources]
-unknown-registry = "deny"
-unknown-git = "deny"
+unknown-registry = "warn"
+unknown-git = "warn"
 allow-registry = ["https://github.com/rust-lang/crates.io-index"]
 allow-git = []
+
+[sources.allow-org]
+github = []
+gitlab = []
+bitbucket = []

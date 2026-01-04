@@ -130,7 +130,7 @@ jobs:
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@nightly
         with:
-          toolchain: nightly-2025-01-13
+          toolchain: nightly
           components: rustfmt, clippy
 
       - name: Cache Rust dependencies
@@ -152,7 +152,6 @@ jobs:
         env:
           DATABASE_URL: postgres://postgres:postgres@localhost:5432/pm_endgame_test
         run: |
-          cd crates/storage
           sqlx database create || true
           sqlx migrate run
 
@@ -183,8 +182,8 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '22'
-          cache: 'yarn'
+          node-version: "22"
+          cache: "yarn"
           cache-dependency-path: web/yarn.lock
 
       - name: Install dependencies
@@ -209,7 +208,8 @@ jobs:
     name: PR Status Check
     runs-on: ubuntu-latest
     timeout-minutes: 5
-    needs: [pr-metadata, dependency-review, detect-changes, rust-checks, web-checks]
+    needs:
+      [pr-metadata, dependency-review, detect-changes, rust-checks, web-checks]
     # Run even if some jobs are skipped
     if: always() && github.event.pull_request.draft == false
 

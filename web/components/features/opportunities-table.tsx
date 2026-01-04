@@ -14,7 +14,7 @@ import {
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { formatPercent, formatDuration, formatScore, getRiskColor } from '@/lib/utils';
+import { formatPercent, formatScore, getRiskColor } from '@/lib/utils';
 import type { Opportunity } from '@/types/api';
 
 function TableSkeleton() {

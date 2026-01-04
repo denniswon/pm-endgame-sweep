@@ -1,25 +1,25 @@
-import { describe, it, expect, beforeEach } from 'vitest';
-import { server } from '../tests/setup';
-import { http, HttpResponse } from 'msw';
-import { getOpportunities, getMarket, checkHealth } from './api';
+import { describe, it, expect } from "vitest";
+import { server } from "../tests/setup";
+import { http, HttpResponse } from "msw";
+import { getOpportunities, getMarket, checkHealth } from "./api";
 
-describe('API Client', () => {
-  describe('getOpportunities', () => {
-    it('fetches opportunities successfully', async () => {
+describe("API Client", () => {
+  describe("getOpportunities", () => {
+    it("fetches opportunities successfully", async () => {
       const data = await getOpportunities();
 
       expect(data.opportunities).toHaveLength(1);
-      expect(data.opportunities[0].market_id).toBe('test-market-1');
+      expect(data.opportunities[0].market_id).toBe("test-market-1");
       expect(data.total).toBe(1);
       expect(data.limit).toBe(50);
       expect(data.offset).toBe(0);
     });
 
-    it('passes query parameters correctly', async () => {
+    it("passes query parameters correctly", async () => {
       let capturedUrl: URL | undefined;
 
       server.use(
-        http.get('http://localhost:3000/v1/opportunities', ({ request }) => {
+        http.get("http://localhost:3000/v1/opportunities", ({ request }) => {
           capturedUrl = new URL(request.url);
           return HttpResponse.json({
             opportunities: [],
@@ -39,19 +39,21 @@ describe('API Client', () => {
         offset: 5,
       });
 
-      expect(capturedUrl?.searchParams.get('min_score')).toBe('0.5');
-      expect(capturedUrl?.searchParams.get('max_risk_score')).toBe('0.7');
-      expect(capturedUrl?.searchParams.get('max_t_remaining_sec')).toBe('86400');
-      expect(capturedUrl?.searchParams.get('has_flags')).toBe('true');
-      expect(capturedUrl?.searchParams.get('limit')).toBe('10');
-      expect(capturedUrl?.searchParams.get('offset')).toBe('5');
+      expect(capturedUrl?.searchParams.get("min_score")).toBe("0.5");
+      expect(capturedUrl?.searchParams.get("max_risk_score")).toBe("0.7");
+      expect(capturedUrl?.searchParams.get("max_t_remaining_sec")).toBe(
+        "86400"
+      );
+      expect(capturedUrl?.searchParams.get("has_flags")).toBe("true");
+      expect(capturedUrl?.searchParams.get("limit")).toBe("10");
+      expect(capturedUrl?.searchParams.get("offset")).toBe("5");
     });
 
-    it('handles undefined query parameters', async () => {
+    it("handles undefined query parameters", async () => {
       let capturedUrl: URL | undefined;
 
       server.use(
-        http.get('http://localhost:3000/v1/opportunities', ({ request }) => {
+        http.get("http://localhost:3000/v1/opportunities", ({ request }) => {
           capturedUrl = new URL(request.url);
           return HttpResponse.json({
             opportunities: [],
@@ -64,40 +66,45 @@ describe('API Client', () => {
 
       await getOpportunities({});
 
-      expect(capturedUrl?.searchParams.toString()).toBe('');
+      expect(capturedUrl?.searchParams.toString()).toBe("");
     });
 
-    it('throws error on 500 response', async () => {
+    it("throws error on 500 response", async () => {
       server.use(
-        http.get('http://localhost:3000/v1/opportunities', () => {
-          return new HttpResponse(null, { status: 500, statusText: 'Internal Server Error' });
+        http.get("http://localhost:3000/v1/opportunities", () => {
+          return new HttpResponse(null, {
+            status: 500,
+            statusText: "Internal Server Error",
+          });
         })
       );
 
       await expect(getOpportunities()).rejects.toThrow(
-        'Failed to fetch opportunities: 500 Internal Server Error'
+        "Failed to fetch opportunities: 500 Internal Server Error"
       );
     });
 
-    it('throws error on 404 response', async () => {
+    it("throws error on 404 response", async () => {
       server.use(
-        http.get('http://localhost:3000/v1/opportunities', () => {
-          return new HttpResponse(null, { status: 404, statusText: 'Not Found' });
+        http.get("http://localhost:3000/v1/opportunities", () => {
+          return new HttpResponse(null, {
+            status: 404,
+            statusText: "Not Found",
+          });
         })
       );
 
       await expect(getOpportunities()).rejects.toThrow(
-        'Failed to fetch opportunities: 404 Not Found'
+        "Failed to fetch opportunities: 404 Not Found"
       );
     });
 
-    it('respects cache: no-store', async () => {
+    it("respects cache: no-store", async () => {
       let requestCount = 0;
 
       server.use(
-        http.get('http://localhost:3000/v1/opportunities', ({ request }) => {
+        http.get("http://localhost:3000/v1/opportunities", () => {
           requestCount++;
-          const cacheControl = request.headers.get('cache-control');
           // Note: fetch() doesn't always send cache-control header, but cache: 'no-store' prevents caching
           return HttpResponse.json({
             opportunities: [],
@@ -115,31 +122,31 @@ describe('API Client', () => {
     });
   });
 
-  describe('getMarket', () => {
-    it('fetches market details successfully', async () => {
-      const data = await getMarket('test-market-1');
+  describe("getMarket", () => {
+    it("fetches market details successfully", async () => {
+      const data = await getMarket("test-market-1");
 
-      expect(data.market.market_id).toBe('test-market-1');
-      expect(data.market.question).toBe('Test Market?');
+      expect(data.market.market_id).toBe("test-market-1");
+      expect(data.market.question).toBe("Test Market?");
       expect(data.quote).toBeDefined();
       expect(data.score).toBeDefined();
       expect(data.recommendation).toBeDefined();
     });
 
-    it('handles market with no quote/score/recommendation', async () => {
+    it("handles market with no quote/score/recommendation", async () => {
       server.use(
-        http.get('http://localhost:3000/v1/market/:id', ({ params }) => {
+        http.get("http://localhost:3000/v1/market/:id", ({ params }) => {
           return HttpResponse.json({
             market: {
               market_id: params.id,
-              question: 'Test Market?',
-              end_date: '2024-12-31T23:59:59Z',
-              close_time: '2024-12-31T23:59:59Z',
+              question: "Test Market?",
+              end_date: "2024-12-31T23:59:59Z",
+              close_time: "2024-12-31T23:59:59Z",
               volume: 100000,
               liquidity: 50000,
               active: true,
-              created_at: '2024-01-01T00:00:00Z',
-              updated_at: '2024-01-01T00:00:00Z',
+              created_at: "2024-01-01T00:00:00Z",
+              updated_at: "2024-01-01T00:00:00Z",
             },
             quote: null,
             score: null,
@@ -148,59 +155,65 @@ describe('API Client', () => {
         })
       );
 
-      const data = await getMarket('test-market-2');
+      const data = await getMarket("test-market-2");
 
-      expect(data.market.market_id).toBe('test-market-2');
+      expect(data.market.market_id).toBe("test-market-2");
       expect(data.quote).toBeNull();
       expect(data.score).toBeNull();
       expect(data.recommendation).toBeNull();
     });
 
-    it('throws error on 500 response', async () => {
+    it("throws error on 500 response", async () => {
       server.use(
-        http.get('http://localhost:3000/v1/market/:id', () => {
-          return new HttpResponse(null, { status: 500, statusText: 'Internal Server Error' });
+        http.get("http://localhost:3000/v1/market/:id", () => {
+          return new HttpResponse(null, {
+            status: 500,
+            statusText: "Internal Server Error",
+          });
         })
       );
 
-      await expect(getMarket('test-market-1')).rejects.toThrow(
-        'Failed to fetch market: 500 Internal Server Error'
+      await expect(getMarket("test-market-1")).rejects.toThrow(
+        "Failed to fetch market: 500 Internal Server Error"
       );
     });
 
-    it('throws error on 404 response', async () => {
+    it("throws error on 404 response", async () => {
       server.use(
-        http.get('http://localhost:3000/v1/market/:id', () => {
-          return new HttpResponse(null, { status: 404, statusText: 'Not Found' });
+        http.get("http://localhost:3000/v1/market/:id", () => {
+          return new HttpResponse(null, {
+            status: 404,
+            statusText: "Not Found",
+          });
         })
       );
 
-      await expect(getMarket('nonexistent')).rejects.toThrow(
-        'Failed to fetch market: 404 Not Found'
+      await expect(getMarket("nonexistent")).rejects.toThrow(
+        "Failed to fetch market: 404 Not Found"
       );
     });
   });
 
-  describe('checkHealth', () => {
-    it('fetches health status successfully', async () => {
+  describe("checkHealth", () => {
+    it("fetches health status successfully", async () => {
       const data = await checkHealth();
 
-      expect(data.status).toBe('ok');
+      expect(data.status).toBe("ok");
     });
 
-    it('throws error on failed health check', async () => {
+    it("throws error on failed health check", async () => {
       server.use(
-        http.get('http://localhost:3000/health', () => {
+        http.get("http://localhost:3000/health", () => {
           return new HttpResponse(null, { status: 503 });
         })
       );
 
-      await expect(checkHealth()).rejects.toThrow('API health check failed');
+      await expect(checkHealth()).rejects.toThrow("API health check failed");
     });
   });
 
-  describe('API Base URL', () => {
-    it('uses environment variable when available', async () => {
+  describe("API Base URL", () => {
+    it("uses environment variable when available", async () => {
       // This test verifies that the API_BASE constant uses NEXT_PUBLIC_API_URL
       // In practice, you'd test this with different env configs
       const data = await getOpportunities();

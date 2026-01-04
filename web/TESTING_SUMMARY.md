@@ -28,6 +28,7 @@ npx playwright install    # Install browser binaries
 **Chosen: Vitest + React Testing Library + Playwright**
 
 ### Why Vitest?
+
 1. ✅ **Native ESM** - Works perfectly with Next.js 15 and Turbopack
 2. ✅ **Fast** - 10-20x faster than Jest for this use case
 3. ✅ **Compatible** - Jest-compatible API, easy migration path
@@ -35,12 +36,14 @@ npx playwright install    # Install browser binaries
 5. ✅ **Modern** - Designed for modern frameworks
 
 ### Why React Testing Library?
+
 1. ✅ **User-centric** - Tests behavior, not implementation
 2. ✅ **Best practice** - Industry standard for React testing
 3. ✅ **Accessible** - Encourages accessible components
 4. ✅ **React 19** - Full support for latest React features
 
 ### Why Playwright for E2E?
+
 1. ✅ **Cross-browser** - Chrome, Firefox, Safari, Mobile
 2. ✅ **Reliable** - Auto-waiting, retry logic
 3. ✅ **Developer-friendly** - Debug UI, trace viewer
@@ -50,16 +53,19 @@ npx playwright install    # Install browser binaries
 ## Alternative Frameworks Considered
 
 ### ❌ Jest
+
 - **Pros**: Most popular, huge ecosystem
 - **Cons**: Slower, ESM support issues, requires babel/swc transform
 - **Why not**: Vitest is faster and better for Next.js 15
 
 ### ❌ Cypress
+
 - **Pros**: Great developer experience, time-travel debugging
 - **Cons**: Can only test Chrome-based browsers, slower
 - **Why not**: Playwright supports more browsers and is faster
 
 ### ❌ Testing Library with Jest
+
 - **Pros**: Traditional, well-documented
 - **Cons**: Configuration overhead, slower
 - **Why not**: Vitest + RTL gives same benefits with better DX
@@ -91,6 +97,7 @@ E2E:         Critical paths only
 ## What Gets Tested
 
 ### ✅ MUST Test
+
 - Pure utility functions (formatPercent, formatDuration, etc.)
 - API client functions (network boundaries)
 - Component rendering with different props
@@ -99,12 +106,14 @@ E2E:         Critical paths only
 - Critical user flows (E2E)
 
 ### ⚠️ OPTIONAL (Lower Priority)
+
 - Type definitions (TypeScript catches these)
 - Third-party library wrappers
 - Simple pass-through components
 - Styling and CSS classes
 
 ### ❌ DON'T Test
+
 - External libraries (trust them)
 - Next.js framework code
 - Simple constants/configs
@@ -149,8 +158,8 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '22'
-          cache: 'yarn'
+          node-version: "22"
+          cache: "yarn"
 
       - name: Install dependencies
         run: |
@@ -188,6 +197,7 @@ jobs:
 ## Current Test Coverage
 
 ### Files with Tests ✅
+
 - `lib/utils.ts` - 35 unit tests
 - `components/ui/badge.tsx` - 8 component tests
 - `lib/api.ts` - 20 API integration tests
@@ -197,6 +207,7 @@ jobs:
 **Total: 81 tests**
 
 ### Files Without Tests (TODO)
+
 - `components/ui/card.tsx`
 - `components/ui/table.tsx`
 - `components/ui/skeleton.tsx`
@@ -217,11 +228,13 @@ jobs:
 ## Performance Benchmarks
 
 ### Vitest (Unit + Component)
+
 - ~1000 tests: < 5 seconds
 - Watch mode: < 100ms for single file change
 - Coverage report: + 2-3 seconds
 
 ### Playwright (E2E)
+
 - 10 tests across 3 browsers: ~30 seconds
 - Parallel execution: ~10 seconds
 - Single browser: ~10 seconds

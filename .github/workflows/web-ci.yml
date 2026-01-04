@@ -2,15 +2,15 @@ name: Web UI CI
 
 on:
   push:
-    branches: [main, modest-kepler]
+    branches: [main, dev]
     paths:
-      - 'web/**'
-      - '.github/workflows/web-ci.yml'
+      - "web/**"
+      - ".github/workflows/web-ci.yml"
   pull_request:
     branches: [main]
     paths:
-      - 'web/**'
-      - '.github/workflows/web-ci.yml'
+      - "web/**"
+      - ".github/workflows/web-ci.yml"
 
 defaults:
   run:
@@ -35,8 +35,8 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '22'
-          cache: 'yarn'
+          node-version: "22"
+          cache: "yarn"
           cache-dependency-path: web/yarn.lock
 
       - name: Install dependencies
@@ -61,8 +61,8 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '22'
-          cache: 'yarn'
+          node-version: "22"
+          cache: "yarn"
           cache-dependency-path: web/yarn.lock
 
       - name: Install dependencies
@@ -97,8 +97,8 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '22'
-          cache: 'yarn'
+          node-version: "22"
+          cache: "yarn"
           cache-dependency-path: web/yarn.lock
 
       - name: Install dependencies
@@ -128,8 +128,8 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '22'
-          cache: 'yarn'
+          node-version: "22"
+          cache: "yarn"
           cache-dependency-path: web/yarn.lock
 
       - name: Install dependencies

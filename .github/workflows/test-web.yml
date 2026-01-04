@@ -2,15 +2,15 @@ name: Test Web UI
 
 on:
   push:
-    branches: [main, modest-kepler]
+    branches: [main, dev]
     paths:
-      - 'web/**'
-      - '.github/workflows/test-web.yml'
+      - "web/**"
+      - ".github/workflows/test-web.yml"
   pull_request:
     branches: [main]
     paths:
-      - 'web/**'
-      - '.github/workflows/test-web.yml'
+      - "web/**"
+      - ".github/workflows/test-web.yml"
 
 defaults:
   run:
@@ -27,8 +27,8 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '22'
-          cache: 'yarn'
+          node-version: "22"
+          cache: "yarn"
           cache-dependency-path: web/yarn.lock
 
       - name: Install dependencies
@@ -38,7 +38,7 @@ jobs:
         run: yarn test --run
 
       - name: Run tests with coverage
-        run: yarn test:coverage || true  # Don't fail on coverage threshold for now
+        run: yarn test:coverage || true # Don't fail on coverage threshold for now
 
       - name: Upload coverage reports
         uses: codecov/codecov-action@v4
@@ -60,8 +60,8 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '22'
-          cache: 'yarn'
+          node-version: "22"
+          cache: "yarn"
           cache-dependency-path: web/yarn.lock
 
       - name: Install dependencies

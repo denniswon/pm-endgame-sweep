@@ -53,10 +53,12 @@ This repository uses a comprehensive, security-hardened CI/CD pipeline with GitH
 **Purpose**: Orchestrator workflow that runs all required pre-merge checks.
 
 **Triggers**:
+
 - Pull requests to `main`
 - PR synchronize, reopen, ready for review
 
 **Features**:
+
 - ✅ **Smart Detection**: Only runs relevant checks based on file changes
 - ✅ **Concurrency Control**: Cancels outdated runs automatically
 - ✅ **Dependency Review**: Scans for vulnerable dependencies
@@ -65,22 +67,26 @@ This repository uses a comprehensive, security-hardened CI/CD pipeline with GitH
 **Jobs**:
 
 1. **pr-metadata**
+
    - Validates PR title (conventional commits format)
    - Warns on large PRs (>50 files or >1000 lines)
    - Timeout: 5 minutes
 
 2. **dependency-review**
+
    - Scans for security vulnerabilities
    - Blocks moderate+ severity issues
    - Validates licenses (MIT, Apache-2.0, BSD-3-Clause, ISC)
    - Timeout: 5 minutes
 
 3. **detect-changes**
+
    - Uses `dorny/paths-filter` for smart detection
    - Outputs: `rust`, `web`, `docs`
    - Timeout: 5 minutes
 
 4. **rust-checks** (conditional)
+
    - Runs only if Rust files changed
    - Formatting check (`cargo fmt`)
    - Linting (`cargo clippy -D warnings`)
@@ -89,6 +95,7 @@ This repository uses a comprehensive, security-hardened CI/CD pipeline with GitH
    - Timeout: 30 minutes
 
 5. **web-checks** (conditional)
+
    - Runs only if web files changed
    - ESLint validation
    - TypeScript type checking
@@ -102,6 +109,7 @@ This repository uses a comprehensive, security-hardened CI/CD pipeline with GitH
    - Always runs (even if jobs skipped)
 
 **Required Checks**:
+
 - `pr-metadata`: ✅ Required
 - `dependency-review`: ✅ Required
 - `rust-checks`: ✅ Required (if Rust files changed)
@@ -113,11 +121,13 @@ This repository uses a comprehensive, security-hardened CI/CD pipeline with GitH
 **Purpose**: Comprehensive Rust backend testing and validation.
 
 **Triggers**:
-- Push to `main`, `modest-kepler`
+
+- Push to `main`, `dev`
 - Pull requests to `main`
 - Only when Rust files change
 
 **Features**:
+
 - ✅ **Fast Caching**: Uses `Swatinem/rust-cache` with shared keys
 - ✅ **PostgreSQL Service**: In-container database for tests
 - ✅ **Multi-OS Support**: Ready for macOS/Windows (currently Ubuntu only)
@@ -126,18 +136,21 @@ This repository uses a comprehensive, security-hardened CI/CD pipeline with GitH
 **Jobs**:
 
 1. **lint** (Priority: High, runs first)
+
    - `cargo fmt --check`
    - `cargo clippy --all-targets --all-features -D warnings`
    - Cache: Shared across jobs
    - Timeout: 10 minutes
 
 2. **security** (Parallel)
+
    - `cargo audit --deny warnings`
    - Continue on error (informational)
    - Cached binary
    - Timeout: 10 minutes
 
 3. **test**
+
    - PostgreSQL 16 service container
    - SQLx migrations
    - `cargo build --workspace --all-targets`
@@ -146,6 +159,7 @@ This repository uses a comprehensive, security-hardened CI/CD pipeline with GitH
    - Timeout: 30 minutes
 
 4. **build-release**
+
    - Release mode compilation
    - Binary size reporting
    - Timeout: 20 minutes
@@ -156,6 +170,7 @@ This repository uses a comprehensive, security-hardened CI/CD pipeline with GitH
    - Timeout: 30 minutes
 
 **Caching Strategy**:
+
 ```yaml
 Cache Key: rust-{job}-{os}-{Cargo.lock hash}
 Cached:
@@ -171,11 +186,13 @@ Invalidation: Cargo.lock changes
 **Purpose**: Frontend testing, linting, and build validation.
 
 **Triggers**:
-- Push to `main`, `modest-kepler`
+
+- Push to `main`, `dev`
 - Pull requests to `main`
 - Only when web files change
 
 **Features**:
+
 - ✅ **Yarn Caching**: Built-in Node.js action caching
 - ✅ **Concurrency Control**: Auto-cancel old runs
 - ✅ **Coverage Upload**: Codecov integration
@@ -184,17 +201,20 @@ Invalidation: Cargo.lock changes
 **Jobs**:
 
 1. **lint** (Priority: High)
+
    - `yarn lint` (ESLint)
    - `yarn tsc --noEmit` (TypeScript)
    - Timeout: 10 minutes
 
 2. **test**
+
    - `yarn test --run` (Vitest)
    - `yarn test:coverage`
    - Codecov upload
    - Timeout: 15 minutes
 
 3. **build**
+
    - `yarn build` (Next.js)
    - Build output analysis
    - Timeout: 15 minutes
@@ -205,6 +225,7 @@ Invalidation: Cargo.lock changes
    - Timeout: 20 minutes
 
 **Caching Strategy**:
+
 ```yaml
 Cache Key: yarn-{os}-{yarn.lock hash}
 Cached:
@@ -218,6 +239,7 @@ Invalidation: yarn.lock changes
 **Purpose**: Automated security scanning and vulnerability detection.
 
 **Triggers**:
+
 - Daily at 6 AM UTC
 - Manual dispatch
 - PRs modifying dependencies
@@ -225,16 +247,19 @@ Invalidation: yarn.lock changes
 **Jobs**:
 
 1. **rust-audit**
+
    - `cargo audit --deny warnings`
    - Uploads failure reports
    - Timeout: 10 minutes
 
 2. **npm-audit**
+
    - `yarn audit --level moderate`
    - JSON report generation
    - Timeout: 10 minutes
 
 3. **codeql**
+
    - GitHub CodeQL analysis
    - JavaScript/TypeScript scanning
    - Security and quality queries
@@ -252,12 +277,14 @@ Invalidation: yarn.lock changes
 **Automated Dependency Updates**:
 
 **Cargo (Rust)**:
+
 - Weekly scans (Monday 9 AM)
 - Groups minor/patch updates
 - Max 5 open PRs
 - Auto-labels: `dependencies`, `rust`
 
 **NPM (Web)**:
+
 - Weekly scans (Monday 9 AM)
 - Ignores major version updates
 - Groups minor/patch updates
@@ -265,6 +292,7 @@ Invalidation: yarn.lock changes
 - Auto-labels: `dependencies`, `web`
 
 **GitHub Actions**:
+
 - Weekly scans (Monday 9 AM)
 - Max 3 open PRs
 - Auto-labels: `dependencies`, `ci`
@@ -272,6 +300,7 @@ Invalidation: yarn.lock changes
 ### CODEOWNERS
 
 Automatic review requests for:
+
 - Rust: `@denniswon`
 - Web: `@denniswon`
 - CI/CD: `@denniswon`
@@ -280,6 +309,7 @@ Automatic review requests for:
 ### PR Template
 
 Standardized PR format with:
+
 - Description and change type
 - Testing checklist
 - Code quality checks
@@ -292,6 +322,7 @@ Standardized PR format with:
 ### 1. Caching Strategy
 
 **Rust**:
+
 ```yaml
 Tool: Swatinem/rust-cache@v2
 Benefits:
@@ -303,6 +334,7 @@ Speed Improvement: 5-10x faster rebuilds
 ```
 
 **Node.js**:
+
 ```yaml
 Tool: actions/setup-node@v4 with yarn cache
 Benefits:
@@ -313,6 +345,7 @@ Speed Improvement: 3-5x faster installs
 ```
 
 **Binary Tools**:
+
 ```yaml
 Cached:
   - cargo-audit
@@ -330,6 +363,7 @@ concurrency:
 ```
 
 **Benefits**:
+
 - Cancels outdated PR runs automatically
 - Saves compute resources
 - Faster feedback on latest commit
@@ -337,6 +371,7 @@ concurrency:
 ### 3. Job Ordering
 
 **Fast Fail Strategy**:
+
 1. Lint jobs (1-2 min) - fail fast on style issues
 2. Type checking (2-3 min)
 3. Tests (5-15 min)
@@ -345,14 +380,16 @@ concurrency:
 ### 4. Smart Triggering
 
 **Path Filters**:
+
 ```yaml
 paths:
-  - 'crates/**'      # Rust changes
-  - 'web/**'         # Web changes
-  - 'Cargo.lock'     # Dependency changes
+  - "crates/**" # Rust changes
+  - "web/**" # Web changes
+  - "Cargo.lock" # Dependency changes
 ```
 
 **Benefits**:
+
 - Skip irrelevant workflows
 - Reduce queue time
 - Lower compute costs
@@ -362,6 +399,7 @@ paths:
 ### 1. Dependency Scanning
 
 **Multi-Layer Defense**:
+
 - ✅ Dependabot: Automated updates
 - ✅ Dependency Review: PR-time blocking
 - ✅ cargo-audit: Rust vulnerability DB
@@ -370,17 +408,20 @@ paths:
 ### 2. Code Scanning
 
 **CodeQL**:
+
 - Security queries: SQL injection, XSS, etc.
 - Quality queries: Code smells, bugs
 - JavaScript/TypeScript coverage
 
 **TruffleHog**:
+
 - Secret detection in diffs
 - Verified secrets only (reduce false positives)
 
 ### 3. License Compliance
 
 **Allowed Licenses**:
+
 - MIT
 - Apache-2.0
 - BSD-3-Clause
@@ -392,9 +433,10 @@ paths:
 ### 4. Permissions
 
 **Principle of Least Privilege**:
+
 ```yaml
 permissions:
-  contents: read         # Most jobs
+  contents: read # Most jobs
   security-events: write # CodeQL only
 ```
 
@@ -403,27 +445,23 @@ permissions:
 ### Recommended Settings for `main`
 
 ```yaml
-Required Status Checks:
-  ✅ PR Checks / pr-status
+Required Status Checks: ✅ PR Checks / pr-status
   ✅ Rust CI / lint
   ✅ Rust CI / test
   ✅ Web CI / lint
   ✅ Web CI / test
   ✅ Web CI / build
 
-Required Reviews:
-  ✅ 1 approving review
+Required Reviews: ✅ 1 approving review
   ✅ Dismiss stale reviews on push
   ✅ Require review from code owners
 
-Branch Rules:
-  ✅ Require branches to be up to date
+Branch Rules: ✅ Require branches to be up to date
   ✅ Require conversation resolution
   ✅ No force pushes
   ✅ No deletions
 
-Additional:
-  ✅ Require signed commits (recommended)
+Additional: ✅ Require signed commits (recommended)
   ✅ Require linear history (optional)
 ```
 
@@ -443,6 +481,7 @@ Additional:
 ### Workflow Status
 
 View all runs:
+
 ```
 https://github.com/denniswon/pm-endgame-sweep/actions
 ```
@@ -450,11 +489,13 @@ https://github.com/denniswon/pm-endgame-sweep/actions
 ### Failed Run Debugging
 
 1. **Check Logs**:
+
    - Click on failed job
    - Expand failing step
    - Look for error messages
 
 2. **Artifacts**:
+
    - Playwright reports (E2E failures)
    - Audit reports (security failures)
    - Coverage reports
@@ -482,10 +523,12 @@ https://github.com/denniswon/pm-endgame-sweep/actions
 ### GitHub Actions Minutes Usage
 
 **Free Tier** (Public repos):
+
 - Unlimited minutes for public repositories
 - ✅ All current workflows included
 
 **Estimated Usage** (per PR):
+
 ```
 Rust CI:     ~15 minutes
 Web CI:      ~10 minutes
@@ -494,6 +537,7 @@ Total:       ~55 minutes per PR
 ```
 
 **Monthly** (10 PRs):
+
 ```
 Total: ~550 minutes
 Cost: $0 (public repo)
@@ -561,6 +605,7 @@ If migrating from existing CI:
 ### Troubleshooting
 
 For CI/CD issues:
+
 1. Check workflow logs
 2. Review recent changes
 3. Test locally first
