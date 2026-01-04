@@ -54,7 +54,7 @@ bigdecimal = { version = "0.4", features = ["serde"] }
 sha2 = "0.10"
 
 # Config
-config = "0.14"
+config = "0.15"
 
 # Testing
 proptest = "1.4"
