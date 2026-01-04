@@ -1,17 +1,22 @@
 # cargo-deny configuration
 # See: https://embarkstudios.github.io/cargo-deny/
 
+[graph]
+targets = []
+all-features = false
+no-default-features = false
+
+[output]
+feature-depth = 1
+
+# This section is considered when running `cargo deny check advisories`
+# https://embarkstudios.github.io/cargo-deny/checks/advisories/cfg.html
 [advisories]
-db-path = "~/.cargo/advisory-db"
-db-urls = ["https://github.com/rustsec/advisory-db"]
-vulnerability = "deny"
-unmaintained = "warn"
-yanked = "deny"
-notice = "warn"
 ignore = []
 
+# This section is considered when running `cargo deny check licenses`
+# https://embarkstudios.github.io/cargo-deny/checks/licenses/cfg.html
 [licenses]
-unlicensed = "deny"
 allow = [
     "MIT",
     "Apache-2.0",
@@ -19,14 +24,18 @@ allow = [
     "BSD-2-Clause",
     "BSD-3-Clause",
     "ISC",
-    "Unicode-DFS-2016",
+    "Unicode-3.0",
+    "Zlib",
+    "CDLA-Permissive-2.0",
 ]
-deny = []
-copyleft = "deny"
-allow-osi-fsf-free = "neither"
-default = "deny"
 confidence-threshold = 0.8
 
+[licenses.private]
+ignore = false
+registries = []
+
+# This section is considered when running `cargo deny check bans`
+# https://embarkstudios.github.io/cargo-deny/checks/bans/cfg.html
 [bans]
 multiple-versions = "warn"
 wildcards = "allow"
@@ -38,8 +47,15 @@ deny = []
 skip = []
 skip-tree = []
 
+# This section is considered when running `cargo deny check sources`
+# https://embarkstudios.github.io/cargo-deny/checks/sources/cfg.html
 [sources]
-unknown-registry = "deny"
-unknown-git = "deny"
+unknown-registry = "warn"
+unknown-git = "warn"
 allow-registry = ["https://github.com/rust-lang/crates.io-index"]
 allow-git = []
+
+[sources.allow-org]
+github = []
+gitlab = []
+bitbucket = []

@@ -1,9 +1,6 @@
 //! HTTP server with route configuration
 
-use axum::{
-    routing::get,
-    Router,
-};
+use axum::{routing::get, Router};
 use sqlx::PgPool;
 use tower_http::trace::TraceLayer;
 

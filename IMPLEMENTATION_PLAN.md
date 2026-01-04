@@ -15,15 +15,15 @@ This plan follows a **schema-first, bottom-up** approach to minimize rework and 
 
 ## Phases and Estimates
 
-| Phase | Description | Duration | Depends On |
-|-------|-------------|----------|------------|
-| E0 | Repo skeleton + CI | 1-2 days | - |
-| E1 | Storage + schema | 2-4 days | E0 |
-| E2 | Polymarket ingestion | 4-7 days | E1 |
-| E3 | Scoring + risk | 4-7 days | E1, E2 |
-| E4 | API service | 3-5 days | E1, E3 |
-| E5 | Next.js UI | 4-7 days | E4 |
-| E6 | Hardening | 3-6 days | All |
+| Phase | Description          | Duration | Depends On |
+| ----- | -------------------- | -------- | ---------- |
+| E0    | Repo skeleton + CI   | 1-2 days | -          |
+| E1    | Storage + schema     | 2-4 days | E0         |
+| E2    | Polymarket ingestion | 4-7 days | E1         |
+| E3    | Scoring + risk       | 4-7 days | E1, E2     |
+| E4    | API service          | 3-5 days | E1, E3     |
+| E5    | Next.js UI           | 4-7 days | E4         |
+| E6    | Hardening            | 3-6 days | All        |
 
 **Total estimate**: 21-38 days for first usable system.
 
@@ -617,27 +617,27 @@ scripts/load_test.sh
 
 ## Acceptance Tests Summary
 
-| Epic | Key Test |
-|------|----------|
-| E0 | `docker compose up` yields healthy services |
-| E1 | `sqlx migrate run` applies cleanly |
-| E2 | Discovery loop populates markets table |
-| E3 | Golden tests for risk extraction produce same flags |
-| E4 | `/v1/opportunities` returns valid JSON |
-| E5 | UI loads opportunities in <1s |
-| E6 | No panics under load; graceful shutdown |
+| Epic | Key Test                                            |
+| ---- | --------------------------------------------------- |
+| E0   | `docker compose up` yields healthy services         |
+| E1   | `sqlx migrate run` applies cleanly                  |
+| E2   | Discovery loop populates markets table              |
+| E3   | Golden tests for risk extraction produce same flags |
+| E4   | `/v1/opportunities` returns valid JSON              |
+| E5   | UI loads opportunities in <1s                       |
+| E6   | No panics under load; graceful shutdown             |
 
 ---
 
 ## Risk Mitigation
 
-| Risk | Mitigation |
-|------|------------|
-| Polymarket API changes | VenueClient trait isolates API details |
-| DB migration conflicts | SQLx offline mode + compile-time checks |
-| Unbounded memory growth | Explicit caps on batch sizes and channels |
-| Scoring takes too long | Bounded batches; parallel processing where safe |
-| UI performance | Server-side pagination; SWR caching |
+| Risk                    | Mitigation                                      |
+| ----------------------- | ----------------------------------------------- |
+| Polymarket API changes  | VenueClient trait isolates API details          |
+| DB migration conflicts  | SQLx offline mode + compile-time checks         |
+| Unbounded memory growth | Explicit caps on batch sizes and channels       |
+| Scoring takes too long  | Bounded batches; parallel processing where safe |
+| UI performance          | Server-side pagination; SWR caching             |
 
 ---
 

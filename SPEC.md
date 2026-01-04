@@ -369,9 +369,7 @@ Very risky or illiquid opportunities degrade toward 1% NAV.
     {
       "code": "SETTLEMENT_DISCRETION",
       "severity": "medium",
-      "evidence_spans": [
-        { "start": 120, "end": 168 }
-      ]
+      "evidence_spans": [{ "start": 120, "end": 168 }]
     }
   ],
   "quote": {
@@ -446,7 +444,7 @@ Very risky or illiquid opportunities degrade toward 1% NAV.
     "samples_retention_days": 7
   },
   "scoring": {
-    "weights": { "w1": 0.45, "w2": 0.25, "w3": 0.15, "w4": 0.10, "w5": 0.05 },
+    "weights": { "w1": 0.45, "w2": 0.25, "w3": 0.15, "w4": 0.1, "w5": 0.05 },
     "bounds": {
       "min_t_remaining_sec": 3600,
       "max_t_remaining_sec": 1209600,

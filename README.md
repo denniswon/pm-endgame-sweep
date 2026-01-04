@@ -27,7 +27,7 @@ All services share a PostgreSQL database with bounded retention policies.
 
 ### Prerequisites
 
-- Rust 1.75+ (MSRV)
+- Rust 1.93+ (MSRV)
 - Node.js 20+
 - PostgreSQL 15+
 - Docker & Docker Compose (optional)
@@ -43,7 +43,6 @@ cd pm-endgame-sweep
 docker compose up -d postgres
 
 # Run migrations
-cd crates/storage
 sqlx migrate run
 
 # Start services
@@ -53,8 +52,8 @@ cargo run --bin pm-api &
 
 # Start UI
 cd web
-pnpm install
-pnpm dev
+yarn install
+yarn dev
 ```
 
 ### Docker Compose
@@ -98,11 +97,11 @@ ingest:
 scoring:
   cadence_sec: 120
   weights:
-    w1: 0.45  # yield velocity
-    w2: 0.25  # net yield
-    w3: 0.15  # liquidity
-    w4: 0.10  # definition risk
-    w5: 0.05  # staleness
+    w1: 0.45 # yield velocity
+    w2: 0.25 # net yield
+    w3: 0.15 # liquidity
+    w4: 0.10 # definition risk
+    w5: 0.05 # staleness
 
 database:
   url: postgres://localhost/pm_endgame

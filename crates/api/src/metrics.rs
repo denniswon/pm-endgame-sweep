@@ -1,10 +1,11 @@
 //! Prometheus metrics
 
-use prometheus::{
-    opts, register_int_counter_vec, register_int_gauge, Encoder, IntCounterVec, IntGauge,
-    Registry, TextEncoder,
-};
 use std::sync::Arc;
+
+use prometheus::{
+    opts, register_int_counter_vec, register_int_gauge, Encoder, IntCounterVec, IntGauge, Registry,
+    TextEncoder,
+};
 
 /// Metrics collector for API service
 #[derive(Clone)]
@@ -62,9 +63,8 @@ impl Metrics {
         let metric_families = self.registry.gather();
         let mut buffer = Vec::new();
         encoder.encode(&metric_families, &mut buffer)?;
-        String::from_utf8(buffer).map_err(|e| {
-            prometheus::Error::Msg(format!("Failed to encode metrics: {}", e))
-        })
+        String::from_utf8(buffer)
+            .map_err(|e| prometheus::Error::Msg(format!("Failed to encode metrics: {}", e)))
     }
 
     /// Record an API request

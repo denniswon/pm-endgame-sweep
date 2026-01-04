@@ -3,6 +3,7 @@
 ## Project Status
 
 **Backend Services: ✅ COMPLETE**
+
 - Phase E0: Repository skeleton + CI ✅
 - Phase E1: Storage layer (PostgreSQL + SQLx) ✅
 - Phase E2: Polymarket ingestion service ✅
@@ -11,6 +12,7 @@
 - Phase E4.3: Prometheus metrics infrastructure ✅
 
 **Frontend UI: ✅ COMPLETE**
+
 - Phase E5: Next.js 15 UI with real-time updates ✅
 
 ## Quick Start (Backend)
@@ -18,7 +20,6 @@
 ```bash
 # Setup database
 export DATABASE_URL="postgres://postgres:postgres@localhost:5432/pm_endgame"
-cd crates/storage
 cargo sqlx migrate run
 
 # Run services
@@ -40,6 +41,7 @@ Open [http://localhost:3001](http://localhost:3001) to view the UI.
 ## Full Stack Usage
 
 1. Start the backend services:
+
    ```bash
    # Terminal 1: API service
    cargo run --bin pm-api
@@ -52,6 +54,7 @@ Open [http://localhost:3001](http://localhost:3001) to view the UI.
    ```
 
 2. Start the frontend:
+
    ```bash
    # Terminal 4: Next.js UI
    cd web && yarn dev
@@ -64,7 +67,7 @@ Open [http://localhost:3001](http://localhost:3001) to view the UI.
 ### API Client (`lib/api.ts`)
 
 ```typescript
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
 
 export async function getOpportunities(params?: {
   min_score?: number;
@@ -73,19 +76,20 @@ export async function getOpportunities(params?: {
   offset?: number;
 }) {
   const query = new URLSearchParams();
-  if (params?.min_score) query.set('min_score', params.min_score.toString());
-  if (params?.max_risk_score) query.set('max_risk_score', params.max_risk_score.toString());
-  if (params?.limit) query.set('limit', params.limit.toString());
-  if (params?.offset) query.set('offset', params.offset.toString());
+  if (params?.min_score) query.set("min_score", params.min_score.toString());
+  if (params?.max_risk_score)
+    query.set("max_risk_score", params.max_risk_score.toString());
+  if (params?.limit) query.set("limit", params.limit.toString());
+  if (params?.offset) query.set("offset", params.offset.toString());
 
   const res = await fetch(`${API_BASE}/v1/opportunities?${query}`);
-  if (!res.ok) throw new Error('Failed to fetch opportunities');
+  if (!res.ok) throw new Error("Failed to fetch opportunities");
   return res.json();
 }
 
 export async function getMarket(id: string) {
   const res = await fetch(`${API_BASE}/v1/market/${id}`);
-  if (!res.ok) throw new Error('Failed to fetch market');
+  if (!res.ok) throw new Error("Failed to fetch market");
   return res.json();
 }
 ```
@@ -172,17 +176,19 @@ See `CLAUDE.md` for detailed Next.js conventions and best practices.
 ## Project Status Summary
 
 ✅ **Backend Services**: Fully operational
-  - PostgreSQL database with SQLx
-  - Polymarket ingestion service
-  - Scoring engine with yield velocity algorithms
-  - REST API with filtering and pagination
-  - Prometheus metrics
+
+- PostgreSQL database with SQLx
+- Polymarket ingestion service
+- Scoring engine with yield velocity algorithms
+- REST API with filtering and pagination
+- Prometheus metrics
 
 ✅ **Frontend UI**: Production-ready
-  - Next.js 15 with App Router
-  - Real-time data with SWR (30s refresh)
-  - Responsive design with Tailwind CSS
-  - Full TypeScript type safety
-  - Error boundaries and loading states
+
+- Next.js 15 with App Router
+- Real-time data with SWR (30s refresh)
+- Responsive design with Tailwind CSS
+- Full TypeScript type safety
+- Error boundaries and loading states
 
 🚀 **Ready for Production**: All phases (E0-E5) complete!

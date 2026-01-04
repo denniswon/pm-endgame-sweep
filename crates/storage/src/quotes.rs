@@ -1,11 +1,11 @@
 //! Database operations for quotes
 
-use bigdecimal::BigDecimal;
-use chrono::{DateTime, Timelike, Utc};
-use sqlx::PgPool;
 use std::str::FromStr;
 
+use bigdecimal::BigDecimal;
+use chrono::{DateTime, Timelike, Utc};
 use pm_domain::Quote;
+use sqlx::PgPool;
 
 /// Error type for quote operations
 #[derive(Debug, thiserror::Error)]
@@ -162,10 +162,7 @@ pub async fn get_quote_latest(pool: &PgPool, market_id: &str) -> Result<Quote> {
 }
 
 /// Get latest quotes for multiple markets
-pub async fn get_quotes_latest_batch(
-    pool: &PgPool,
-    market_ids: &[String],
-) -> Result<Vec<Quote>> {
+pub async fn get_quotes_latest_batch(pool: &PgPool, market_ids: &[String]) -> Result<Vec<Quote>> {
     if market_ids.is_empty() {
         return Ok(Vec::new());
     }

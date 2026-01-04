@@ -2,10 +2,9 @@
 //!
 //! Discovers markets, polls quotes, and extracts rules from Polymarket.
 
+use pm_ingest::{IngestConfig, IngestOrchestrator, PolymarketClient};
 use sqlx::postgres::PgPoolOptions;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
-
-use pm_ingest::{IngestConfig, IngestOrchestrator, PolymarketClient};
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {

@@ -2,14 +2,12 @@
 
 use async_trait::async_trait;
 use chrono::{DateTime, Utc};
+use pm_domain::{Market, MarketStatus, Outcome, Quote, RiskFlag, RuleSnapshot};
 use reqwest::Client;
 use serde::Deserialize;
 use sha2::{Digest, Sha256};
 
-use pm_domain::{Market, MarketStatus, Outcome, Quote, RiskFlag, RuleSnapshot};
-
-use crate::config::RetryConfig;
-use crate::retry::retry_with_backoff;
+use crate::{config::RetryConfig, retry::retry_with_backoff};
 
 /// Error type for venue client operations
 #[derive(Debug, thiserror::Error)]
@@ -129,11 +127,7 @@ impl VenueClient for PolymarketClient {
         );
 
         let response = retry_with_backoff(&self.retry_config, || async {
-            self.http
-                .get(&url)
-                .send()
-                .await?
-                .error_for_status()
+            self.http.get(&url).send().await?.error_for_status()
         })
         .await?;
 
@@ -149,7 +143,11 @@ impl VenueClient for PolymarketClient {
                     title: m.question,
                     slug: Some(m.slug),
                     category: m.category,
-                    status: if m.closed { MarketStatus::Closed } else { MarketStatus::Active },
+                    status: if m.closed {
+                        MarketStatus::Closed
+                    } else {
+                        MarketStatus::Active
+                    },
                     open_time: m.start_date,
                     close_time: m.end_date,
                     resolved_time: None,
@@ -167,11 +165,7 @@ impl VenueClient for PolymarketClient {
             let url = format!("{}/markets/{}/book", self.base_url, market_id);
 
             let response = retry_with_backoff(&self.retry_config, || async {
-                self.http
-                    .get(&url)
-                    .send()
-                    .await?
-                    .error_for_status()
+                self.http.get(&url).send().await?.error_for_status()
             })
             .await;
 
@@ -236,17 +230,15 @@ impl VenueClient for PolymarketClient {
         let url = format!("{}/markets/{}", self.base_url, market_id);
 
         let response = retry_with_backoff(&self.retry_config, || async {
-            self.http
-                .get(&url)
-                .send()
-                .await?
-                .error_for_status()
+            self.http.get(&url).send().await?.error_for_status()
         })
         .await?;
 
         let market: PolymarketMarketDetailResponse = response.json().await?;
 
-        let rule_text = market.description.unwrap_or_else(|| "No rules provided".to_string());
+        let rule_text = market
+            .description
+            .unwrap_or_else(|| "No rules provided".to_string());
         let rule_hash = Self::compute_rule_hash(&rule_text);
         let risk_flags = Self::extract_risk_flags(&rule_text);
         let definition_risk_score = Self::calculate_risk_score(&risk_flags);
@@ -267,11 +259,7 @@ impl VenueClient for PolymarketClient {
         let url = format!("{}/markets/{}", self.base_url, market_id);
 
         let response = retry_with_backoff(&self.retry_config, || async {
-            self.http
-                .get(&url)
-                .send()
-                .await?
-                .error_for_status()
+            self.http.get(&url).send().await?.error_for_status()
         })
         .await?;
 

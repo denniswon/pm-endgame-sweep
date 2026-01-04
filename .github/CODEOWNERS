@@ -1,0 +1,23 @@
+# Code owners for automated review requests
+# These owners will be automatically requested for review when files are modified
+
+# Global owners (fallback)
+*                          @denniswon
+
+# Rust backend
+/crates/**                 @denniswon
+/Cargo.toml                @denniswon
+/Cargo.lock                @denniswon
+
+# Web UI
+/web/**                    @denniswon
+
+# CI/CD and infrastructure
+/.github/**                @denniswon
+
+# Documentation
+/*.md                      @denniswon
+/docs/**                   @denniswon
+
+# Database migrations (require extra scrutiny)
+/crates/storage/migrations/** @denniswon

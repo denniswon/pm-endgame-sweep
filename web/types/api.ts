@@ -1,7 +1,13 @@
+export interface EvidenceSpan {
+  start: number;
+  end: number;
+  text: string;
+}
+
 export interface RiskFlag {
   code: string;
   severity: string;
-  evidence_spans: any[];
+  evidence_spans: EvidenceSpan[];
 }
 
 export interface Opportunity {
@@ -12,7 +18,7 @@ export interface Opportunity {
   expected_payout: number;
   max_position_pct: number;
   risk_score: number;
-  risk_flags: any[];
+  risk_flags: RiskFlag[];
   notes?: string;
 }
 
