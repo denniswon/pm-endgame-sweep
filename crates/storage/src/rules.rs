@@ -1,10 +1,10 @@
 //! Database operations for rules
 
-use bigdecimal::BigDecimal;
-use sqlx::PgPool;
 use std::str::FromStr;
 
+use bigdecimal::BigDecimal;
 use pm_domain::RuleSnapshot;
+use sqlx::PgPool;
 
 /// Error type for rule operations
 #[derive(Debug, thiserror::Error)]
@@ -88,19 +88,13 @@ pub async fn get_rule(pool: &PgPool, market_id: &str) -> Result<RuleSnapshot> {
         rule_hash: row.rule_hash,
         settlement_source: row.settlement_source,
         settlement_window: row.settlement_window,
-        definition_risk_score: row.definition_risk_score
-            .to_string()
-            .parse()
-            .unwrap_or(1.0),
+        definition_risk_score: row.definition_risk_score.to_string().parse().unwrap_or(1.0),
         risk_flags,
     })
 }
 
 /// Get rule snapshots for multiple markets
-pub async fn get_rules_batch(
-    pool: &PgPool,
-    market_ids: &[String],
-) -> Result<Vec<RuleSnapshot>> {
+pub async fn get_rules_batch(pool: &PgPool, market_ids: &[String]) -> Result<Vec<RuleSnapshot>> {
     if market_ids.is_empty() {
         return Ok(Vec::new());
     }
@@ -130,11 +124,7 @@ pub async fn get_rules_batch(
             rule_hash: row.rule_hash,
             settlement_source: row.settlement_source,
             settlement_window: row.settlement_window,
-            definition_risk_score: row
-                .definition_risk_score
-                .to_string()
-                .parse()
-                .unwrap_or(1.0),
+            definition_risk_score: row.definition_risk_score.to_string().parse().unwrap_or(1.0),
             risk_flags,
         });
     }
@@ -143,11 +133,7 @@ pub async fn get_rules_batch(
 }
 
 /// Check if rule text has changed (by hash comparison)
-pub async fn has_rule_changed(
-    pool: &PgPool,
-    market_id: &str,
-    new_hash: &str,
-) -> Result<bool> {
+pub async fn has_rule_changed(pool: &PgPool, market_id: &str, new_hash: &str) -> Result<bool> {
     let row = sqlx::query!(
         r#"
         SELECT rule_hash

@@ -1,17 +1,14 @@
 //! Scoring orchestrator that periodically computes scores and recommendations
 
-use std::collections::HashMap;
-use std::time::Duration;
+use std::{collections::HashMap, time::Duration};
 
+use pm_domain::{Quote, RuleSnapshot, Score};
+use pm_storage::{markets, quotes, recs, rules, scores};
 use sqlx::PgPool;
 use tokio::time::interval;
 use tokio_util::sync::CancellationToken;
 
-use pm_domain::{Quote, RuleSnapshot, Score};
-use pm_storage::{markets, quotes, rules, scores, recs};
-
-use crate::config::ScoringConfig;
-use crate::engine::ScoringEngine;
+use crate::{config::ScoringConfig, engine::ScoringEngine};
 
 /// Error type for orchestrator operations
 #[derive(Debug, thiserror::Error)]
@@ -121,7 +118,9 @@ impl ScoringOrchestrator {
         tracing::info!(count = rules.len(), "Fetched rules");
 
         // Compute scores
-        let computed_scores = self.engine.compute_scores_batch(&markets, &quotes, &rules, now);
+        let computed_scores = self
+            .engine
+            .compute_scores_batch(&markets, &quotes, &rules, now);
 
         if computed_scores.is_empty() {
             tracing::debug!("No scores computed");
@@ -142,9 +141,9 @@ impl ScoringOrchestrator {
             .collect();
 
         // Generate recommendations
-        let recommendations = self
-            .engine
-            .generate_recommendations_batch(&markets, &scores_map, &quotes, &rules);
+        let recommendations =
+            self.engine
+                .generate_recommendations_batch(&markets, &scores_map, &quotes, &rules);
 
         tracing::info!(count = recommendations.len(), "Generated recommendations");
 

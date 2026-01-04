@@ -25,10 +25,7 @@ where
         match operation().await {
             Ok(result) => {
                 if attempt > 1 {
-                    tracing::info!(
-                        attempt,
-                        "Operation succeeded after retry"
-                    );
+                    tracing::info!(attempt, "Operation succeeded after retry");
                 }
                 return Ok(result);
             }

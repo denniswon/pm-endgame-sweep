@@ -1,9 +1,8 @@
 //! Database operations for markets
 
 use chrono::Utc;
-use sqlx::PgPool;
-
 use pm_domain::{Market, MarketStatus, Outcome};
+use sqlx::PgPool;
 
 /// Error type for market operations
 #[derive(Debug, thiserror::Error)]

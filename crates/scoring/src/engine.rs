@@ -3,9 +3,8 @@
 use std::collections::HashMap;
 
 use chrono::{DateTime, Utc};
-use serde_json::json;
-
 use pm_domain::{Market, Quote, Recommendation, RuleSnapshot, Score};
+use serde_json::json;
 
 use crate::config::ScoringConfig;
 
@@ -152,9 +151,7 @@ impl ScoringEngine {
         let risk_score = score.definition_risk_score + score.staleness_penalty;
 
         // Risk flags from rule analysis
-        let risk_flags = rule
-            .map(|r| r.risk_flags.clone())
-            .unwrap_or_default();
+        let risk_flags = rule.map(|r| r.risk_flags.clone()).unwrap_or_default();
 
         // Notes with key metrics
         let notes = format!(
@@ -205,7 +202,8 @@ impl ScoringEngine {
     ) -> f64 {
         let w = &self.config.weights;
 
-        // Normalize yield metrics (assuming max ~1.0 for yield velocity, ~0.5 for net yield)
+        // Normalize yield metrics (assuming max ~1.0 for yield velocity, ~0.5 for net
+        // yield)
         let norm_velocity = (yield_velocity / 1.0).clamp(0.0, 1.0);
         let norm_net_yield = (net_yield / 0.5).clamp(0.0, 1.0);
 

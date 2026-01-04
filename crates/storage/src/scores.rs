@@ -1,10 +1,10 @@
 //! Database operations for scores
 
-use bigdecimal::BigDecimal;
-use sqlx::PgPool;
 use std::str::FromStr;
 
+use bigdecimal::BigDecimal;
 use pm_domain::Score;
+use sqlx::PgPool;
 
 /// Error type for score operations
 #[derive(Debug, thiserror::Error)]
@@ -172,11 +172,7 @@ pub async fn get_score(pool: &PgPool, market_id: &str) -> Result<Score> {
         liquidity_score: row.liquidity_score.to_string().parse().unwrap_or(0.0),
         staleness_sec: row.staleness_sec,
         staleness_penalty: row.staleness_penalty.to_string().parse().unwrap_or(0.0),
-        definition_risk_score: row
-            .definition_risk_score
-            .to_string()
-            .parse()
-            .unwrap_or(0.0),
+        definition_risk_score: row.definition_risk_score.to_string().parse().unwrap_or(0.0),
         overall_score: row.overall_score.to_string().parse().unwrap_or(0.0),
         score_breakdown: row.score_breakdown,
     })
@@ -225,11 +221,7 @@ pub async fn list_top_scores(
             liquidity_score: row.liquidity_score.to_string().parse().unwrap_or(0.0),
             staleness_sec: row.staleness_sec,
             staleness_penalty: row.staleness_penalty.to_string().parse().unwrap_or(0.0),
-            definition_risk_score: row
-                .definition_risk_score
-                .to_string()
-                .parse()
-                .unwrap_or(0.0),
+            definition_risk_score: row.definition_risk_score.to_string().parse().unwrap_or(0.0),
             overall_score: row.overall_score.to_string().parse().unwrap_or(0.0),
             score_breakdown: row.score_breakdown,
         })

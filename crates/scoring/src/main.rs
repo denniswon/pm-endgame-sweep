@@ -2,10 +2,9 @@
 //!
 //! Computes opportunity scores and risk decomposition.
 
+use pm_scoring::{ScoringConfig, ScoringOrchestrator};
 use sqlx::postgres::PgPoolOptions;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
-
-use pm_scoring::{ScoringConfig, ScoringOrchestrator};
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {

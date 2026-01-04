@@ -1,10 +1,10 @@
 //! Database operations for recommendations
 
-use bigdecimal::BigDecimal;
-use sqlx::PgPool;
 use std::str::FromStr;
 
+use bigdecimal::BigDecimal;
 use pm_domain::Recommendation;
+use sqlx::PgPool;
 
 /// Error type for recommendation operations
 #[derive(Debug, thiserror::Error)]

@@ -1,15 +1,15 @@
 //! Opportunities listing handler
 
+use std::sync::Arc;
+
 use axum::{
     extract::{Query, State},
     http::StatusCode,
     Json,
 };
+use pm_storage::recs;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
-use std::sync::Arc;
-
-use pm_storage::recs;
 
 use crate::state::AppState;
 

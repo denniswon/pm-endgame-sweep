@@ -9,7 +9,14 @@ vulnerability = "deny"
 unmaintained = "all"
 yanked = "all"
 notice = "all"
-ignore = []
+ignore = [
+    # RUSTSEC-2023-0071: rsa crate timing sidechannel
+    # This is a build-time dependency via sqlx-macros -> sqlx-mysql
+    # We only use PostgreSQL at runtime, not MySQL
+    # The vulnerability affects RSA decrypt operations which we never perform
+    # No patch available as of 2025-01-03
+    { id = "RUSTSEC-2023-0071", reason = "build-time only, MySQL not used" },
+]
 severity-threshold = "low"
 
 [licenses]

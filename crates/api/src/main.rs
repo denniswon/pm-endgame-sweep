@@ -2,10 +2,9 @@
 //!
 //! Read-only REST API for opportunities and market detail.
 
+use pm_api::{ApiConfig, ApiServer};
 use sqlx::postgres::PgPoolOptions;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
-
-use pm_api::{ApiConfig, ApiServer};
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {

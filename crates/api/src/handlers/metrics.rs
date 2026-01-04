@@ -1,14 +1,17 @@
 //! Metrics endpoint handler
 
-use axum::{extract::State, http::StatusCode};
 use std::sync::Arc;
+
+use axum::{extract::State, http::StatusCode};
 
 use crate::state::AppState;
 
 /// Metrics endpoint
 ///
 /// Returns Prometheus-formatted metrics
-pub async fn metrics_handler(State(state): State<Arc<AppState>>) -> Result<String, (StatusCode, String)> {
+pub async fn metrics_handler(
+    State(state): State<Arc<AppState>>,
+) -> Result<String, (StatusCode, String)> {
     state.metrics.render().map_err(|e| {
         tracing::error!(error = %e, "Failed to render metrics");
         (

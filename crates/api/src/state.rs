@@ -1,10 +1,10 @@
 //! Shared application state
 
-use sqlx::PgPool;
 use std::sync::Arc;
 
-use crate::config::ApiConfig;
-use crate::metrics::Metrics;
+use sqlx::PgPool;
+
+use crate::{config::ApiConfig, metrics::Metrics};
 
 /// Shared application state accessible to all handlers
 #[derive(Clone)]

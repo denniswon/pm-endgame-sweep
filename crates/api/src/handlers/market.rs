@@ -1,15 +1,15 @@
 //! Market details handler
 
+use std::sync::Arc;
+
 use axum::{
     extract::{Path, State},
     http::StatusCode,
     Json,
 };
+use pm_storage::{markets, quotes, recs, rules, scores};
 use serde::Serialize;
 use serde_json::Value;
-use std::sync::Arc;
-
-use pm_storage::{markets, quotes, recs, rules, scores};
 
 use crate::state::AppState;
 
@@ -164,23 +164,24 @@ pub async fn market_handler(
         });
 
     // Fetch recommendation (optional)
-    let recommendation = recs::get_rec(&state.pool, &market_id)
-        .await
-        .ok()
-        .map(|r| RecommendationInfo {
-            as_of: r.as_of.to_rfc3339(),
-            recommended_side: r.recommended_side,
-            entry_price: r.entry_price,
-            expected_payout: r.expected_payout,
-            max_position_pct: r.max_position_pct,
-            risk_score: r.risk_score,
-            risk_flags: r
-                .risk_flags
-                .into_iter()
-                .map(|f| serde_json::to_value(f).unwrap_or(serde_json::Value::Null))
-                .collect(),
-            notes: r.notes,
-        });
+    let recommendation =
+        recs::get_rec(&state.pool, &market_id)
+            .await
+            .ok()
+            .map(|r| RecommendationInfo {
+                as_of: r.as_of.to_rfc3339(),
+                recommended_side: r.recommended_side,
+                entry_price: r.entry_price,
+                expected_payout: r.expected_payout,
+                max_position_pct: r.max_position_pct,
+                risk_score: r.risk_score,
+                risk_flags: r
+                    .risk_flags
+                    .into_iter()
+                    .map(|f| serde_json::to_value(f).unwrap_or(serde_json::Value::Null))
+                    .collect(),
+                notes: r.notes,
+            });
 
     let market_info = MarketInfo {
         market_id: market.market_id,

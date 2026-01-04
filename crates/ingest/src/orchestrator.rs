@@ -1,18 +1,14 @@
 //! Ingestion orchestrator with bounded channels and periodic tasks
 
-use std::sync::Arc;
-use std::time::Duration;
-
-use sqlx::PgPool;
-use tokio::sync::mpsc;
-use tokio::time::interval;
-use tokio_util::sync::CancellationToken;
+use std::{sync::Arc, time::Duration};
 
 use pm_domain::{Market, Quote, RuleSnapshot};
 use pm_storage::{markets, quotes, rules};
+use sqlx::PgPool;
+use tokio::{sync::mpsc, time::interval};
+use tokio_util::sync::CancellationToken;
 
-use crate::client::VenueClient;
-use crate::config::IngestConfig;
+use crate::{client::VenueClient, config::IngestConfig};
 
 /// Error type for orchestrator operations
 #[derive(Debug, thiserror::Error)]
@@ -29,7 +25,8 @@ pub enum OrchestratorError {
 
 pub type Result<T> = std::result::Result<T, OrchestratorError>;
 
-/// Ingestion orchestrator coordinates discovery, quote polling, and rule extraction
+/// Ingestion orchestrator coordinates discovery, quote polling, and rule
+/// extraction
 pub struct IngestOrchestrator<C: VenueClient> {
     client: Arc<C>,
     pool: PgPool,
