@@ -133,7 +133,6 @@ jobs:
         env:
           DATABASE_URL: postgres://postgres:postgres@localhost:5432/pm_endgame_test
         run: |
-          cd crates/storage
           sqlx database create || true
           sqlx migrate run
 
@@ -223,7 +222,6 @@ jobs:
         env:
           DATABASE_URL: postgres://postgres:postgres@localhost:5432/pm_endgame_test
         run: |
-          cd crates/storage
           sqlx database create || true
           sqlx migrate run
 
