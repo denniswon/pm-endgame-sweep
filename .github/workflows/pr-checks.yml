@@ -1,0 +1,234 @@
+name: PR Checks
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened, ready_for_review]
+
+# Prevent multiple runs for same PR
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  # PR validation and labeling
+  pr-metadata:
+    name: PR Metadata Check
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    if: github.event.pull_request.draft == false
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check PR title format
+        run: |
+          PR_TITLE="${{ github.event.pull_request.title }}"
+          # Check for conventional commit format (optional but recommended)
+          if ! echo "$PR_TITLE" | grep -qE '^(feat|fix|docs|style|refactor|perf|test|chore|ci)(\(.+\))?: .+'; then
+            echo "::warning::PR title doesn't follow conventional commit format"
+            echo "::warning::Recommended format: type(scope): description"
+            echo "::warning::Example: feat(api): add market filtering endpoint"
+          fi
+
+      - name: Check PR size
+        run: |
+          FILES_CHANGED=$(git diff --name-only origin/${{ github.base_ref }}...HEAD | wc -l)
+          LINES_CHANGED=$(git diff --stat origin/${{ github.base_ref }}...HEAD | tail -1 | grep -oE '[0-9]+ insertions|[0-9]+ deletions' | grep -oE '[0-9]+' | awk '{sum+=$1} END {print sum}')
+
+          echo "Files changed: $FILES_CHANGED"
+          echo "Lines changed: $LINES_CHANGED"
+
+          if [ "$FILES_CHANGED" -gt 50 ]; then
+            echo "::warning::Large PR detected ($FILES_CHANGED files changed)"
+            echo "::warning::Consider splitting into smaller PRs for easier review"
+          fi
+
+          if [ "$LINES_CHANGED" -gt 1000 ]; then
+            echo "::warning::Large PR detected ($LINES_CHANGED lines changed)"
+            echo "::warning::Consider splitting into smaller PRs for easier review"
+          fi
+
+  # Dependency review for security
+  dependency-review:
+    name: Dependency Review
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    if: github.event.pull_request.draft == false
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Dependency Review
+        uses: actions/dependency-review-action@v4
+        with:
+          # Fail on critical or high severity vulnerabilities
+          fail-on-severity: moderate
+          # Allow licenses
+          allow-licenses: MIT, Apache-2.0, BSD-3-Clause, ISC, 0BSD
+
+  # Detect changes to determine which jobs to run
+  detect-changes:
+    name: Detect Changes
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      rust: ${{ steps.filter.outputs.rust }}
+      web: ${{ steps.filter.outputs.web }}
+      docs: ${{ steps.filter.outputs.docs }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Detect file changes
+        uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            rust:
+              - 'crates/**'
+              - 'Cargo.toml'
+              - 'Cargo.lock'
+            web:
+              - 'web/**'
+            docs:
+              - '**.md'
+              - 'docs/**'
+
+  # Rust checks (only if Rust files changed)
+  rust-checks:
+    name: Rust Checks (Required)
+    needs: detect-changes
+    if: needs.detect-changes.outputs.rust == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: pm_endgame_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+
+      - name: Cache Rust dependencies
+        uses: Swatinem/rust-cache@v2
+        with:
+          shared-key: "pr-rust"
+          cache-on-failure: true
+
+      - name: Check formatting
+        run: cargo fmt --all -- --check
+
+      - name: Run clippy
+        run: cargo clippy --workspace --all-targets --all-features -- -D warnings
+
+      - name: Install sqlx-cli
+        run: cargo install sqlx-cli --no-default-features --features postgres --locked || cargo install sqlx-cli --no-default-features --features postgres
+
+      - name: Setup database
+        env:
+          DATABASE_URL: postgres://postgres:postgres@localhost:5432/pm_endgame_test
+        run: |
+          cd crates/storage
+          sqlx database create || true
+          sqlx migrate run
+
+      - name: Build
+        run: cargo build --workspace --all-targets --all-features
+
+      - name: Run tests
+        env:
+          DATABASE_URL: postgres://postgres:postgres@localhost:5432/pm_endgame_test
+        run: cargo test --workspace --all-features
+
+  # Web checks (only if web files changed)
+  web-checks:
+    name: Web Checks (Required)
+    needs: detect-changes
+    if: needs.detect-changes.outputs.web == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    defaults:
+      run:
+        working-directory: web
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'yarn'
+          cache-dependency-path: web/yarn.lock
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile --prefer-offline
+
+      - name: Run linter
+        run: yarn lint
+
+      - name: Type check
+        run: yarn tsc --noEmit
+
+      - name: Run tests
+        run: yarn test --run
+
+      - name: Build check
+        run: yarn build
+        env:
+          NEXT_PUBLIC_API_URL: http://localhost:3000
+
+  # Final status check (always runs)
+  pr-status:
+    name: PR Status Check
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    needs: [pr-metadata, dependency-review, detect-changes, rust-checks, web-checks]
+    # Run even if some jobs are skipped
+    if: always() && github.event.pull_request.draft == false
+
+    steps:
+      - name: Check required jobs
+        run: |
+          echo "PR Metadata: ${{ needs.pr-metadata.result }}"
+          echo "Dependency Review: ${{ needs.dependency-review.result }}"
+          echo "Rust Changes: ${{ needs.detect-changes.outputs.rust }}"
+          echo "Web Changes: ${{ needs.detect-changes.outputs.web }}"
+          echo "Rust Checks: ${{ needs.rust-checks.result }}"
+          echo "Web Checks: ${{ needs.web-checks.result }}"
+
+          # Fail if any required job failed
+          if [ "${{ needs.pr-metadata.result }}" == "failure" ] || \
+             [ "${{ needs.dependency-review.result }}" == "failure" ] || \
+             ([ "${{ needs.detect-changes.outputs.rust }}" == "true" ] && [ "${{ needs.rust-checks.result }}" == "failure" ]) || \
+             ([ "${{ needs.detect-changes.outputs.web }}" == "true" ] && [ "${{ needs.web-checks.result }}" == "failure" ]); then
+            echo "::error::One or more required checks failed"
+            exit 1
+          fi
+
+          echo "::notice::All required checks passed ✅"
