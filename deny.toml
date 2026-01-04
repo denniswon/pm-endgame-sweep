@@ -12,13 +12,7 @@ feature-depth = 1
 # This section is considered when running `cargo deny check advisories`
 # https://embarkstudios.github.io/cargo-deny/checks/advisories/cfg.html
 [advisories]
-ignore = [
-    # RUSTSEC-2023-0071: rsa crate timing sidechannel (Marvin Attack)
-    # This is pulled in via sqlx-macros -> sqlx-mysql as a transitive dependency
-    # We only use PostgreSQL at runtime, not MySQL - the vulnerable code path is never executed
-    # No patch available - https://rustsec.org/advisories/RUSTSEC-2023-0071
-    { id = "RUSTSEC-2023-0071", reason = "transitive dep via sqlx-mysql; we only use postgres" },
-]
+ignore = []
 
 # This section is considered when running `cargo deny check licenses`
 # https://embarkstudios.github.io/cargo-deny/checks/licenses/cfg.html
@@ -30,11 +24,9 @@ allow = [
     "BSD-2-Clause",
     "BSD-3-Clause",
     "ISC",
-    "Unicode-DFS-2016",
-    "Zlib",
-    "CC0-1.0",
     "Unicode-3.0",
-    "MPL-2.0",
+    "Zlib",
+    "CDLA-Permissive-2.0",
 ]
 confidence-threshold = 0.8
 

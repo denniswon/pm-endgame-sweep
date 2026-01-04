@@ -76,7 +76,7 @@ This repository uses a comprehensive, security-hardened CI/CD pipeline with GitH
 
    - Scans for security vulnerabilities
    - Blocks moderate+ severity issues
-   - Validates licenses (MIT, Apache-2.0, BSD-3-Clause, ISC)
+   - Validates licenses (MIT, Apache-2.0, BSD-2-Clause, BSD-3-Clause, ISC, 0BSD, Zlib, CC0-1.0, BlueOak-1.0.0, CDLA-Permissive-2.0, Unicode-3.0, Unlicense)
    - Timeout: 5 minutes
 
 3. **detect-changes**

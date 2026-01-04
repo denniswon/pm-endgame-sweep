@@ -101,11 +101,13 @@ test.describe('Market Details Page', () => {
     await page.goto('/market/test-market-123');
 
     // Verify quotes section
-    await expect(page.getByText('Current Quotes')).toBeVisible();
-    await expect(page.getByText('YES')).toBeVisible();
-    await expect(page.getByText('NO')).toBeVisible();
-    await expect(page.getByText('Bid:')).toBeVisible();
-    await expect(page.getByText('Ask:')).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Current Quotes' })).toBeVisible();
+    // YES and NO section headers
+    await expect(page.getByRole('heading', { name: 'YES' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'NO' })).toBeVisible();
+    // Check that Bid/Ask labels exist (use first() since there are multiple)
+    await expect(page.getByText('Bid:').first()).toBeVisible();
+    await expect(page.getByText('Ask:').first()).toBeVisible();
   });
 
   test('displays score breakdown section', async ({ page, context }) => {
@@ -191,9 +193,11 @@ test.describe('Market Details Page', () => {
     await page.goto('/market/test-market-123');
 
     // Verify recommendation section
-    await expect(page.getByText('Recommendation')).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Recommendation' })).toBeVisible();
     await expect(page.getByText('Recommended Side:')).toBeVisible();
-    await expect(page.getByText('YES')).toBeVisible();
+    // Find the YES text that appears after "Recommended Side:" label
+    const recommendationSection = page.locator('text=Recommended Side:').locator('..').locator('..');
+    await expect(recommendationSection.getByText('YES')).toBeVisible();
 
     // Verify risk flags
     await expect(page.getByText(/Risk Flags \(2\)/)).toBeVisible();
