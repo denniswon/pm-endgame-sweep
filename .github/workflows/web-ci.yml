@@ -1,4 +1,4 @@
-name: Web UI CI
+name: Web CI
 
 on:
   push:
@@ -7,22 +7,21 @@ on:
       - "web/**"
       - ".github/workflows/web-ci.yml"
   pull_request:
-    branches: [main]
+    branches: [main, dev]
     paths:
       - "web/**"
       - ".github/workflows/web-ci.yml"
+  workflow_call:
+
+concurrency:
+  group: web-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 defaults:
   run:
     working-directory: web
 
-# Cancel in-progress runs for same workflow and ref
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
-
 jobs:
-  # Fast feedback: Lint and type check first
   lint:
     name: Lint & Type Check
     runs-on: ubuntu-latest
@@ -48,7 +47,6 @@ jobs:
       - name: Type check
         run: yarn tsc --noEmit
 
-  # Unit and component tests
   test:
     name: Unit & Component Tests
     runs-on: ubuntu-latest
@@ -76,15 +74,14 @@ jobs:
         continue-on-error: true
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5
         if: always()
         with:
           files: ./web/coverage/coverage-final.json
-          flags: web-ui
+          flags: web
           name: web-coverage
         continue-on-error: true
 
-  # Build check
   build:
     name: Build Check
     runs-on: ubuntu-latest
@@ -114,7 +111,6 @@ jobs:
           ls -lh .next/static || true
           du -sh .next || true
 
-  # E2E tests (only run on main or when explicitly requested)
   e2e:
     name: E2E Tests
     runs-on: ubuntu-latest
@@ -144,7 +140,7 @@ jobs:
           CI: true
 
       - name: Upload Playwright report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         if: failure()
         with:
           name: playwright-report
